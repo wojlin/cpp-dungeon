@@ -4,38 +4,47 @@
 #include <vector>
 #include <iostream>
 
-enum trapType
+namespace Trap 
 {
-    POISON,
-    FIRE,
-    CONFUSSION,
-    DARKNESS,
-    WEAKNESS
-};
+    enum trapType
+    {
+        POISON,
+        FIRE,
+        CONFUSSION,
+        DARKNESS,
+        WEAKNESS
+    };
+}
 
-enum floorType
+namespace Floor 
 {
-    NORMAL,
-    DOOR,
-    WATER,
-    PUDDLE,
-    TRAP,
-    BUSH,
-    TREASURE,
-    GRAVE
-};
+    enum floorType
+    {
+        NORMAL,
+        DOOR,
+        WATER,
+        PUDDLE,
+        TRAP,
+        BUSH,
+        TREASURE,
+        GRAVE
+    };
+}
 
-enum wallType
+namespace Wall 
 {
-    NORMAL,
-    LIGHT
-};
-
+    enum wallType
+    {
+        NORMAL,
+        LIGHT
+    };
+}
 
 struct levelTile
 {
     int id;
 };
+
 
 class level
 {

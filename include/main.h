@@ -8,7 +8,11 @@
 int launchGame(int argc, char* argv[])
 {
     levelGenerator generator;
-    generator.createLevel(0);
+    //for(int i = 1; i < 35; i++)
+    //{
+    //    generator.createLevel(i);
+    //}
+    generator.createLevel(1);
     
     std::cout << "hello world!" << std::endl;
     return 0;
