@@ -3,10 +3,15 @@
 
 int levelGenerator::getRandomNumber(int minmumNumber, int maximumNumber)
 {
-    if(minmumNumber >= maximumNumber)
+    if(minmumNumber > maximumNumber)
     {
         std::cerr << "minimum number is higher or equal maximum:";
         std::cerr << " min=" << minmumNumber << " max=" << maximumNumber << std::endl;
+    }
+
+    if(minmumNumber == maximumNumber)
+    {
+        return minmumNumber;
     }
     
     std::random_device rd;
@@ -15,56 +20,68 @@ int levelGenerator::getRandomNumber(int minmumNumber, int maximumNumber)
     return distribution(gen);
 }
 
-void levelGenerator::traverseBSP(nodeBSP* node)
+void levelGenerator::traverseBSP(BSP* bsp, nodeBSP* node)
 {
-    /*
+    
     std::cout << "node";
     std::cout << " depth:" << node->depth;
     std::cout << " x:" << node->posX;
     std::cout << " y:" << node->posY;
     std::cout << " w:" << node->width;
     std::cout << " h:" << node->height;
-    std::cout << std::endl;
-    */
+    
+    bsp->nodesAmount += 1;
+    bsp->visulatizationBSP += (createVisualization(node) + "\n");
+
 
     if(node->room != nullptr)
     {
-        std::cout << "room ";
+        std::cout << " room ";
         std::cout << " x:" << node->posX;
         std::cout << " y:" << node->posY;
         std::cout << " w:" << node->width;
         std::cout << " h:" << node->height;
-        std::cout << std::endl;
+        bsp->rooms.push_back(node->room);
+        bsp->roomsAmount += 1;
+        bsp->visulatizationRooms += (createVisualization(node) + "\n");
     }
+
+    std::cout << std::endl;
     
     if(node->firstNode != nullptr)
     {
-        traverseBSP(node->firstNode);
+        traverseBSP(bsp, node->firstNode);
     }
 
     if(node->secondNode != nullptr)
     {
-        traverseBSP(node->firstNode);
+        traverseBSP(bsp, node->secondNode);
     }
 
 }
 
+int levelGenerator::calculateDesiredRoomSize(int dungeonDepth)
+{
+    return static_cast<int>(std::floor(sqrt(static_cast<float>(dungeonDepth)*2.0)+9.0));
+}
+
 int levelGenerator::calculateRecursionsAmount(int dungeonDepth)
 {
-    float calcMin = sqrt(static_cast<float>(dungeonDepth)/1.5)+0.2;
-    float calcMax = sqrt(static_cast<float>(dungeonDepth)*2.0)+1.0;
+    float calcMin = sqrt(static_cast<float>(dungeonDepth)/1.5)+1.2;
+    float calcMax = sqrt(static_cast<float>(dungeonDepth)*2.0)+1.7;
     int minimumRecursion = static_cast<int>(std::floor(calcMin));
     int maximumRecursion = static_cast<int>(std::floor(calcMax));
+
     int recursionsAmount = getRandomNumber(minimumRecursion, maximumRecursion);
     return recursionsAmount;
 }
 
 int levelGenerator::calculateLevelSize(int dungeonDepth)
 {
-    return (dungeonDepth * 2) + 50;
+    return (dungeonDepth * 3) + 50;
 }
 
-levelGenerator::nodeBSP levelGenerator::createBSP(int dungeonDepth)
+levelGenerator::BSP levelGenerator::createBSP(int dungeonDepth)
 {
     
     //step 1: choose rooms amount
@@ -74,15 +91,24 @@ levelGenerator::nodeBSP levelGenerator::createBSP(int dungeonDepth)
     //step 2: choose level size
     int levelSize = calculateLevelSize(dungeonDepth);
 
+    //step 3: choose room size
+    int desiredRoomSize = calculateDesiredRoomSize(dungeonDepth);
+    
     nodeBSP root = {recursionsAmount,0, 0, levelSize, levelSize, nullptr, nullptr, nullptr};
 
-    splitNodeBSP(&root, recursionsAmount);
-
-    return root;
+    splitNodeBSP(&root, recursionsAmount, desiredRoomSize);
+    
+    BSP bsp;
+    bsp.root = root;
+    bsp.recursionAmount = recursionsAmount;
+    
+    return bsp;
 }
 
-void levelGenerator::splitNodeBSP(nodeBSP* node, int depth)
+void levelGenerator::splitNodeBSP(nodeBSP* node, int depth, int desiredRoomSize)
 {
+    depth -= 1;
+
     nodeBSP firstNode;
     nodeBSP secondNode;
 
@@ -95,68 +121,105 @@ void levelGenerator::splitNodeBSP(nodeBSP* node, int depth)
     secondNode.secondNode = nullptr;
     secondNode.room = nullptr;
     secondNode.depth = depth;
+    
 
-    //step 1: choose random split direction
-    int isVerticalSplit = getRandomNumber(0,1);
-    //step 2: choose random position
-    if(static_cast<bool>(isVerticalSplit))
+    bool widthEnough = node->width > desiredRoomSize * 2;
+    bool heightEnough = node->height > desiredRoomSize * 2;
+
+    if((widthEnough || heightEnough) && depth >= 0)
     {
-        int height = getRandomNumber(0, node->height - MINIMUM_ROOM_SIZE);
-        firstNode.posX = node->posX;
-        firstNode.posY = node->posY;
-        firstNode.width = node->width;
-        firstNode.height = height;
 
-        secondNode.posX = node->posX;
-        secondNode.posY = node->posY + height + 1;
-        secondNode.width = node->width;
-        secondNode.height = node->height - height - 1;
+        //step 1: choose random split direction
+        int isVerticalSplit;
+        if(widthEnough && heightEnough)
+        {
+            isVerticalSplit = getRandomNumber(0,1);
+        } 
+        else if (!widthEnough)
+        {
+            isVerticalSplit = 1;
+        }
+        else
+        {
+            isVerticalSplit = 0;
+        }
+        //step 2: choose random position
+        if(static_cast<bool>(isVerticalSplit))
+        {
+            int height = getRandomNumber(desiredRoomSize, node->height - desiredRoomSize);
+            firstNode.posX = node->posX;
+            firstNode.posY = node->posY;
+            firstNode.width = node->width;
+            firstNode.height = height;
+
+            secondNode.posX = node->posX;
+            secondNode.posY = node->posY + height + 1;
+            secondNode.width = node->width;
+            secondNode.height = node->height - height - 1;
+        }
+        else
+        {
+            int width = getRandomNumber(desiredRoomSize, node->width - desiredRoomSize);
+            firstNode.posX = node->posX;
+            firstNode.posY = node->posY;
+            firstNode.width = width;
+            firstNode.height = node->height;
+
+            secondNode.posX = node->posX + width + 1;
+            secondNode.posY = node->posY;
+            secondNode.width = node->width - width - 1;
+            secondNode.height = node->height;
+        }
+
+        node->firstNode = new nodeBSP(firstNode);
+        node->secondNode = new nodeBSP(secondNode);
+
+        splitNodeBSP(node->firstNode, depth, desiredRoomSize);
+        splitNodeBSP(node->secondNode, depth, desiredRoomSize);
     }
     else
     {
-        int width = getRandomNumber(0, node->width - MINIMUM_ROOM_SIZE);
-        firstNode.posX = node->posX;
-        firstNode.posY = node->posY;
-        firstNode.width = width;
-        firstNode.height = node->height;
-
-        secondNode.posX = node->posX + width + 1;
-        secondNode.posY = node->posY;
-        secondNode.width = node->width - width - 1;
-        secondNode.height = node->height;
-    }
-
-    node->firstNode = new nodeBSP(firstNode);
-    node->secondNode = new nodeBSP(secondNode);
-
-    depth -= 1;
-    if(depth >= 0)
-    {   
-        bool isFirstNodeWidthEnough = node->firstNode->height > MINIMUM_ROOM_SIZE;
-        bool isFirstNodeHeightEnough = node->firstNode->width > MINIMUM_ROOM_SIZE;
-        
-        bool isSecondNodeWidthEnough = node->secondNode->height > MINIMUM_ROOM_SIZE;
-        bool isSecondNodeHeightEnough = node->secondNode->width > MINIMUM_ROOM_SIZE;
-
-        if(isFirstNodeWidthEnough && isFirstNodeHeightEnough)
-        {
-            splitNodeBSP(node->firstNode, depth);
-        }else
-        {
-            
-        }
-
-        if(isSecondNodeWidthEnough && isSecondNodeHeightEnough)
-        {
-            splitNodeBSP(node->secondNode, depth);
-        }else
-        {
-
-        }
-    }else
-    {
         node->room = new roomBox(createRoom(node));
     }
+    
+}
+
+//this will generate latex for demos: https://www.desmos.com/calculator/
+std::string levelGenerator::visualization(int x, int y, int w, int h)
+{   
+    std::string desmos;
+    desmos += std::to_string(x);
+    desmos += "\\le x\\le";
+    desmos += std::to_string(x+w);
+    desmos += "\\left\\{";
+    desmos +=  std::to_string(y);
+    desmos += "\\le y\\le";
+    desmos += std::to_string(y+h);
+    desmos += "\\right\\}";
+    
+    return desmos;
+}
+
+//this will generate latex for demos: https://www.desmos.com/calculator/
+std::string levelGenerator::createVisualization(nodeBSP* node)
+{   
+    int w = node->width;
+    int h = node->height;
+    int x = node->posX;
+    int y = node->posY;
+    
+    return visualization(x,y,w,h);
+}
+
+//this will generate latex for demos: https://www.desmos.com/calculator/
+std::string levelGenerator::createVisualization(roomBox* room)
+{   
+    int w = room->width;
+    int h = room->height;
+    int x = room->posX;
+    int y = room->posY;
+
+    return visualization(x,y,w,h);
 }
 
 levelGenerator::roomBox levelGenerator::createRoom(nodeBSP* node)
@@ -171,7 +234,15 @@ levelGenerator::roomBox levelGenerator::createRoom(nodeBSP* node)
 
 level levelGenerator::createLevel(int dungeonDepth)
 {
-    nodeBSP root = createBSP(dungeonDepth);
-    traverseBSP(&root);
+    BSP bsp = createBSP(dungeonDepth);
+    traverseBSP(&bsp, &bsp.root);
+    std::cout << "recursion amount: " << bsp.recursionAmount << std::endl;
+    std::cout << "nodes amount: " << bsp.nodesAmount << std::endl;
+    std::cout << "rooms amount: " << bsp.roomsAmount << std::endl;
+    std::cout << "bsp visualization: " << std::endl;
+    std::cout << bsp.visulatizationBSP << std::endl;
+    std::cout << "rooms visualization: " << std::endl;
+    std::cout << bsp.visulatizationRooms << std::endl;
+
     return level();
 }
