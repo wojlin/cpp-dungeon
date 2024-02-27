@@ -5,8 +5,12 @@ int levelGenerator::getRandomNumber(int minmumNumber, int maximumNumber)
 {
     if(minmumNumber > maximumNumber)
     {
-        std::cerr << "minimum number is higher or equal maximum:";
-        std::cerr << " min=" << minmumNumber << " max=" << maximumNumber << std::endl;
+        std::string error = "minimum number is higher or equal maximum:";
+        error += " min=";
+        error += std::to_string(minmumNumber);
+        error += " max=";
+        error +=  std::to_string(maximumNumber);
+        throw std::runtime_error(error);
     }
 
     if(minmumNumber == maximumNumber)

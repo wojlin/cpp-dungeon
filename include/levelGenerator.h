@@ -16,7 +16,7 @@ class levelGenerator
     public:
         level createLevel(int dungeonDepth);
 
-    private:
+    protected:
 
         struct roomBox
         {
@@ -59,6 +59,8 @@ class levelGenerator
         BSP createBSP(int dungeonDepth);
         roomBox createRoom(nodeBSP* node);
         void splitNodeBSP(nodeBSP* node, int depth, int desiredRoomSize);
+        
+        
         int getRandomNumber(int minmumNumber, int maximumNumber);
             
     

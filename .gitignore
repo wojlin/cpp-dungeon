@@ -13,3 +13,6 @@ build/*
 build
 ./build
 build/
+external/googletest
+external/googletest/
+external/googletest/*
