@@ -12,7 +12,8 @@ set(TestCase
 testRandomNumber 
 testCalculateLevelSize 
 testCalculateDesiredRoomSize 
-testCalculateRecursionsAmount)
+testCalculateRecursionsAmount
+testSplitBSP)
 
 
 set(Sources ${Test}.cpp)

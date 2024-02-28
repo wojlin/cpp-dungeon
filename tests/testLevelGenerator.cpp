@@ -39,6 +39,7 @@ class testLevelGeneratorClass : public levelGenerator
         using levelGenerator::calculateLevelSize; 
         using levelGenerator::calculateDesiredRoomSize; 
         using levelGenerator::calculateRecursionsAmount; 
+        using levelGenerator::splitNodeBSP; 
 };
 
 
@@ -259,6 +260,42 @@ TEST(levelGeneratorSuite, testCalculateRecursionsAmount)
 
         }
     }
+}
+
+
+
+TEST(levelGeneratorSuite, testSplitBSPSingle)
+{
+    testLevelGeneratorClass generator;
+
+    int recursions = 1;
+    int size = 50;
+    levelGenerator::nodeBSP root = {recursions, 0, 0, 50, 50, nullptr, nullptr, nullptr};
+    generator.splitNodeBSP(&root, recursions, size);
+
+    ASSERT_TRUE(root.room != nullptr);
+    ASSERT_NE(root.firstNode, nullptr);
+    ASSERT_NE(root.secondNode, nullptr);
+
+    ASSERT_TRUE(false);
+}
+
+
+TEST(levelGeneratorSuite, testSplitBSP)
+{
+    testLevelGeneratorClass generator;
+
+
+    int recursions = 1;
+    int size = 50;
+    levelGenerator::nodeBSP root = {recursions, 0, 0, 50, 50, nullptr, nullptr, nullptr};
+    generator.splitNodeBSP(&root, recursions, size);
+
+    ASSERT_TRUE(root.room != nullptr);
+    ASSERT_NE(root.firstNode, nullptr);
+    ASSERT_NE(root.secondNode, nullptr);
+
+    ASSERT_TRUE(false);
 }
 
 int main(int argc, char **argv) {

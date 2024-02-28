@@ -14,9 +14,6 @@
 class levelGenerator
 {
     public:
-        level createLevel(int dungeonDepth);
-
-    protected:
 
         struct roomBox
         {
@@ -48,6 +45,12 @@ class levelGenerator
             int nodesAmount;
             std::vector<roomBox*> rooms;
         };
+        
+        level createLevel(int dungeonDepth);
+
+    protected:
+
+        
 
 
 
