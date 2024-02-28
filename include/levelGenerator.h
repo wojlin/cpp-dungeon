@@ -49,23 +49,54 @@ class levelGenerator
             std::vector<roomBox*> rooms;
         };
 
+
+
+
+        // ### VISUALIZATION ###
+
         std::string createVisualization(nodeBSP* node);
         std::string createVisualization(roomBox* room);
         std::string visualization(int x, int y, int w, int h);
-        int calculateDesiredRoomSize(int dungeonDepth);
-        int calculateRecursionsAmount(int dungeonDepth);
-        int calculateLevelSize(int dungeonDepth);
-        void traverseBSP(BSP* bsp, nodeBSP* node);
-        BSP createBSP(int dungeonDepth);
+        
+
+
+        // ### ROOMS ###
+
         roomBox createRoom(nodeBSP* node);
+
+
+
+        // ### BSP ###
+
+        //creates bsp of dungeon
+        BSP createBSP(int dungeonDepth); 
+        
+        //this method recursively splits nodes
         void splitNodeBSP(nodeBSP* node, int depth, int desiredRoomSize);
         
+        //this method will traverse trough bsp tree and assign rooms etc.
+        void traverseBSP(BSP* bsp, nodeBSP* node);
         
+
+
+        // ### CALCULATIONS ###
+
+        //calculates level size size based on dungeon depth
+        int calculateLevelSize(int dungeonDepth);
+
+        //calculates desired room size based on dungeon depth
+        int calculateDesiredRoomSize(int dungeonDepth);
+        
+        //calculates recursions amount based on dungeon depth
+        int calculateRecursionsAmount(int dungeonDepth);
+        
+
+
+        // ### UTILS ###
+
+        //util function to create random number inclusive
         int getRandomNumber(int minmumNumber, int maximumNumber);
             
-    
-    
-
 };
 
 

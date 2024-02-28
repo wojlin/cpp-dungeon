@@ -2,6 +2,8 @@
 #include <string>
 #include <string.h>
 #include <sstream>
+#include <thread>
+#include <chrono>
 
 #include "../include/levelGenerator.h"
 
@@ -34,11 +36,20 @@ class testLevelGeneratorClass : public levelGenerator
 {
     public:
         using levelGenerator::getRandomNumber; 
+        using levelGenerator::calculateLevelSize; 
+        using levelGenerator::calculateDesiredRoomSize; 
+        using levelGenerator::calculateRecursionsAmount; 
 };
 
 
+void wait()
+{
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+}
+
 TEST(levelGeneratorSuite, testRandomNumber)
 {
+    wait();
     testLevelGeneratorClass generator;
 
     //tc 1 : test diffrent values
@@ -86,9 +97,168 @@ TEST(levelGeneratorSuite, testRandomNumber)
 }
 
 
-TEST(levelGeneratorSuite, testAnother)
+TEST(levelGeneratorSuite, testCalculateLevelSize)
 {
-    ASSERT_EQ(1,1);
+    wait();
+    testLevelGeneratorClass generator;
+
+
+    for(int i = 1; i < 9; i++)
+    {
+        int levelSize = generator.calculateLevelSize(i);
+
+        switch (i) 
+        {
+            case 1:
+                ASSERT_EQ(levelSize, 53);
+                break;
+            case 2:
+                ASSERT_EQ(levelSize, 56);
+                break;
+            case 3:
+                ASSERT_EQ(levelSize, 59);
+                break;
+            case 4:
+                ASSERT_EQ(levelSize, 62);
+                break;
+            case 5:
+                ASSERT_EQ(levelSize, 65);
+                break;
+            case 6:
+                ASSERT_EQ(levelSize, 68);
+                break;
+            case 7:
+                ASSERT_EQ(levelSize, 71);
+                break;
+            case 8:
+                ASSERT_EQ(levelSize, 74);
+                break;
+            case 9:
+                ASSERT_EQ(levelSize, 77);
+                break;
+            case 10:
+                ASSERT_EQ(levelSize, 80);
+                break;
+            default:
+                std::cout << "iteration " << i << std::endl;
+                throw std::runtime_error("error");
+        }
+
+    }
+    
+}
+
+TEST(levelGeneratorSuite, testCalculateDesiredRoomSize)
+{
+
+    wait();
+    testLevelGeneratorClass generator;
+
+
+    for(int i = 1; i < 9; i++)
+    {
+        int roomSize = generator.calculateDesiredRoomSize(i);
+
+        switch (i) 
+        {
+            case 1:
+                ASSERT_EQ(roomSize, 10);
+                break;
+            case 2:
+                ASSERT_EQ(roomSize, 11);
+                break;
+            case 3:
+                ASSERT_EQ(roomSize, 11);
+                break;
+            case 4:
+                ASSERT_EQ(roomSize, 11);
+                break;
+            case 5:
+                ASSERT_EQ(roomSize, 12);
+                break;
+            case 6:
+                ASSERT_EQ(roomSize, 12);
+                break;
+            case 7:
+                ASSERT_EQ(roomSize, 12);
+                break;
+            case 8:
+                ASSERT_EQ(roomSize, 13);
+                break;
+            case 9:
+                ASSERT_EQ(roomSize, 13);
+                break;
+            case 10:
+                ASSERT_EQ(roomSize, 13);
+                break;
+            default:
+                std::cout << "iteration " << i << std::endl;
+                throw std::runtime_error("error");
+        }
+
+    }
+}
+
+TEST(levelGeneratorSuite, testCalculateRecursionsAmount)
+{
+    wait();
+    testLevelGeneratorClass generator;
+
+    for( int x = 0; x < 1000; x++)
+    {
+        for(int i = 1; i < 9; i++)
+        {
+            int recursions = generator.calculateRecursionsAmount(i);
+
+            switch (i) 
+            {
+                case 1:
+                    ASSERT_GE(recursions, 2);
+                    ASSERT_LE(recursions, 3);
+                    break;
+                case 2:
+                    ASSERT_GE(recursions, 2);
+                    ASSERT_LE(recursions, 3);
+                    break;
+                case 3:
+                    ASSERT_GE(recursions, 2);
+                    ASSERT_LE(recursions, 4);
+                    break;
+                case 4:
+                    ASSERT_GE(recursions, 2);
+                    ASSERT_LE(recursions, 4);
+                    break;
+                case 5:
+                    ASSERT_GE(recursions, 3);
+                    ASSERT_LE(recursions, 4);
+                    break;
+                case 6:
+                    ASSERT_GE(recursions, 3);
+                    ASSERT_LE(recursions, 5);
+                    break;
+                case 7:
+                    ASSERT_GE(recursions, 3);
+                    ASSERT_LE(recursions, 5);
+                    break;
+                case 8:
+                    ASSERT_GE(recursions, 3);
+                    ASSERT_LE(recursions, 5);
+                    break;
+                case 9:
+                    ASSERT_GE(recursions, 3);
+                    ASSERT_LE(recursions, 5);
+                    break;
+                case 10:
+                    ASSERT_GE(recursions, 3);
+                    ASSERT_LE(recursions, 6);
+                    break;
+                default:
+                    std::cout << "iteration " << i << std::endl;
+                    throw std::runtime_error("error");
+            }
+
+        }
+    }
 }
 
 int main(int argc, char **argv) {
