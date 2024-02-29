@@ -75,7 +75,7 @@ class levelGenerator
         BSP createBSP(int dungeonDepth); 
         
         //this method recursively splits nodes
-        void splitNodeBSP(nodeBSP* node, int depth, int desiredRoomSize);
+        void splitNodeBSP(nodeBSP* node, int desiredRoomSize);
         
         //this method will traverse trough bsp tree and assign rooms etc.
         void traverseBSP(BSP* bsp, nodeBSP* node);

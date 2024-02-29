@@ -100,7 +100,7 @@ levelGenerator::BSP levelGenerator::createBSP(int dungeonDepth)
     
     nodeBSP root = {recursionsAmount,0, 0, levelSize, levelSize, nullptr, nullptr, nullptr};
 
-    splitNodeBSP(&root, recursionsAmount, desiredRoomSize);
+    splitNodeBSP(&root, desiredRoomSize);
     
     BSP bsp;
     bsp.root = root;
@@ -109,9 +109,9 @@ levelGenerator::BSP levelGenerator::createBSP(int dungeonDepth)
     return bsp;
 }
 
-void levelGenerator::splitNodeBSP(nodeBSP* node, int depth, int desiredRoomSize)
+void levelGenerator::splitNodeBSP(nodeBSP* node, int desiredRoomSize)
 {
-    depth -= 1;
+    int depth = node->depth;
 
     nodeBSP firstNode;
     nodeBSP secondNode;
@@ -119,12 +119,12 @@ void levelGenerator::splitNodeBSP(nodeBSP* node, int depth, int desiredRoomSize)
     firstNode.firstNode = nullptr;
     firstNode.secondNode = nullptr;
     firstNode.room = nullptr;
-    firstNode.depth = depth;
+    
 
     secondNode.firstNode = nullptr;
     secondNode.secondNode = nullptr;
     secondNode.room = nullptr;
-    secondNode.depth = depth;
+    
     
 
     bool widthEnough = node->width > desiredRoomSize * 2;
@@ -174,12 +174,16 @@ void levelGenerator::splitNodeBSP(nodeBSP* node, int depth, int desiredRoomSize)
             secondNode.width = node->width - width - 1;
             secondNode.height = node->height;
         }
+        
+        depth -= 1;
+        firstNode.depth = depth;
+        secondNode.depth = depth;
 
         node->firstNode = new nodeBSP(firstNode);
         node->secondNode = new nodeBSP(secondNode);
 
-        splitNodeBSP(node->firstNode, depth, desiredRoomSize);
-        splitNodeBSP(node->secondNode, depth, desiredRoomSize);
+        splitNodeBSP(node->firstNode, desiredRoomSize);
+        splitNodeBSP(node->secondNode, desiredRoomSize);
     }
     else
     {
