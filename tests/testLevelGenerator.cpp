@@ -284,18 +284,70 @@ TEST(levelGeneratorSuite, testSplitBSPSingle)
 TEST(levelGeneratorSuite, testSplitBSP)
 {
     wait();
-    
+
     testLevelGeneratorClass generator;
 
 
-    int recursions = 1;
-    int size = 10;
-    levelGenerator::nodeBSP root = {recursions, 0, 0, 50, 50, nullptr, nullptr, nullptr};
-    generator.splitNodeBSP(&root, size);
+    // ┌────┬────┐
+    // │    │    │
+    // └────┴────┘
+    // size = 1/2 level size
+    //
+    // TEST 1 RECURSIONS
+    for(int i = 0; i < 1000; i++)
+    {
+        int recursions = 1;
+        int size = 10;
+        int levelSize = 50;
+        levelGenerator::nodeBSP root = {recursions, 0, 0, levelSize, levelSize , nullptr, nullptr, nullptr};
+        generator.splitNodeBSP(&root, size);
 
-    ASSERT_TRUE(root.room == nullptr);
-    ASSERT_FALSE(root.firstNode == nullptr);
-    ASSERT_FALSE(root.secondNode == nullptr);
+        ASSERT_TRUE(root.room == nullptr);
+        ASSERT_FALSE(root.firstNode == nullptr);
+        ASSERT_FALSE(root.secondNode == nullptr);
+    }
+
+
+    //  ┌────┬────┬────┬────┐ 
+    //  │    │    │    │    │
+    //  └────┴────┴────┴────┘
+    //   
+    //  size = 1/4 level size
+    //
+    // TEST 2 RECURSIONS
+    for(int i = 0; i < 1000; i++)
+    {
+        int recursions = 2;
+        int size = 10;
+        int levelSize = 50;
+        levelGenerator::nodeBSP root = {recursions, 0, 0, levelSize, levelSize , nullptr, nullptr, nullptr};
+        generator.splitNodeBSP(&root, size);
+
+        ASSERT_TRUE(root.room == nullptr);
+        ASSERT_FALSE(root.firstNode == nullptr);
+        ASSERT_FALSE(root.secondNode == nullptr);
+    }
+
+    //  ┌────┬────┬────┬────┬────┬────┬────┬────┐ 
+    //  │    │    │    │    │    │    │    │    │
+    //  └────┴────┴────┴────┴────┴────┴────┴────┘
+    //  size = 1/8 level size
+    //
+    // TEST 3 RECURSIONS
+    for(int i = 0; i < 1000; i++)
+    {
+        int recursions = 3;
+        int size = 10;
+        int levelSize = 50;
+        levelGenerator::nodeBSP root = {recursions, 0, 0, levelSize, levelSize , nullptr, nullptr, nullptr};
+        generator.splitNodeBSP(&root, size);
+
+        ASSERT_TRUE(root.room == nullptr);
+        ASSERT_FALSE(root.firstNode == nullptr);
+        ASSERT_FALSE(root.secondNode == nullptr);
+    }
+
+    
 
 }
 

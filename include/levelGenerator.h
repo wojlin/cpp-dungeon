@@ -84,12 +84,15 @@ class levelGenerator
 
         // ### CALCULATIONS ###
 
+        //calculates minimum node size based on recursions amount and level size
+        int calculateMinimumNodeSize(int recursionsAmount, int levelSize);
+        
         //calculates level size size based on dungeon depth
         int calculateLevelSize(int dungeonDepth);
 
         //calculates desired room size based on dungeon depth
         int calculateDesiredRoomSize(int dungeonDepth);
-        
+
         //calculates recursions amount based on dungeon depth
         int calculateRecursionsAmount(int dungeonDepth);
         

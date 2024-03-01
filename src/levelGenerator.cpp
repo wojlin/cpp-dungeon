@@ -64,6 +64,11 @@ void levelGenerator::traverseBSP(BSP* bsp, nodeBSP* node)
 
 }
 
+int levelGenerator::calculateMinimumNodeSize(int recursionsAmount, int levelSize)
+{
+    return static_cast<int>(std::floor( (1.0 / pow(2, recursionsAmount) ) * levelSize ));
+}
+
 int levelGenerator::calculateDesiredRoomSize(int dungeonDepth)
 {
     return static_cast<int>(std::floor(sqrt(static_cast<float>(dungeonDepth)*2.0)+9.0));
@@ -113,25 +118,28 @@ void levelGenerator::splitNodeBSP(nodeBSP* node, int desiredRoomSize)
 {
     int depth = node->depth;
 
-    nodeBSP firstNode;
-    nodeBSP secondNode;
-
-    firstNode.firstNode = nullptr;
-    firstNode.secondNode = nullptr;
-    firstNode.room = nullptr;
-    
-
-    secondNode.firstNode = nullptr;
-    secondNode.secondNode = nullptr;
-    secondNode.room = nullptr;
-    
-    
-
-    bool widthEnough = node->width > desiredRoomSize * 2;
-    bool heightEnough = node->height > desiredRoomSize * 2;
-
-    if((widthEnough || heightEnough) && depth >= 0)
+    if(depth >= 0)
     {
+        nodeBSP firstNode;
+        nodeBSP secondNode;
+
+        firstNode.firstNode = nullptr;
+        firstNode.secondNode = nullptr;
+        firstNode.room = nullptr;
+        
+
+        secondNode.firstNode = nullptr;
+        secondNode.secondNode = nullptr;
+        secondNode.room = nullptr;
+
+        bool widthEnough = node->width > desiredRoomSize * (depth + 1);
+        bool heightEnough = node->height > desiredRoomSize * (depth + 1);
+        
+        if(!widthEnough && !heightEnough)
+        {
+            throw std::runtime_error("error during creation of bsp tree");
+        }
+
 
         //step 1: choose random split direction
         int isVerticalSplit;
@@ -150,7 +158,15 @@ void levelGenerator::splitNodeBSP(nodeBSP* node, int desiredRoomSize)
         //step 2: choose random position
         if(static_cast<bool>(isVerticalSplit))
         {
-            int height = getRandomNumber(desiredRoomSize, node->height - desiredRoomSize);
+
+            int min = desiredRoomSize * depth;
+            int max = node->height - (desiredRoomSize * depth);
+            if(min > max)
+            {
+                throw std::range_error("not enough space to create node. try increasing level size");
+            }
+
+            int height = getRandomNumber(min, max);
             firstNode.posX = node->posX;
             firstNode.posY = node->posY;
             firstNode.width = node->width;
@@ -163,7 +179,14 @@ void levelGenerator::splitNodeBSP(nodeBSP* node, int desiredRoomSize)
         }
         else
         {
-            int width = getRandomNumber(desiredRoomSize, node->width - desiredRoomSize);
+            int min = desiredRoomSize * depth;
+            int max = node->width - (desiredRoomSize * depth);
+            if(min > max)
+            {
+                throw std::range_error("not enough space to create node. try increasing level size");
+            }
+
+            int width = getRandomNumber(min, max);
             firstNode.posX = node->posX;
             firstNode.posY = node->posY;
             firstNode.width = width;
