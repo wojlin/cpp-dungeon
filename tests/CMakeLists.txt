@@ -11,7 +11,7 @@ set(Test testLevelGenerator)
 set(TestCase 
 testRandomNumber 
 testCalculateLevelSize 
-testCalculateDesiredRoomSize 
+testCalculateDesiredNodeSize 
 testCalculateRecursionsAmount
 testSplitBSP)
 
