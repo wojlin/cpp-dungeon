@@ -6,7 +6,7 @@
 #include <chrono>
 
 #include "../include/levelGenerator.h"
-
+#include "../include/level.h"
 
 class levelGeneratorSuite : public ::testing::Test {
 protected:
@@ -35,11 +35,17 @@ protected:
 class testLevelGeneratorClass : public levelGenerator 
 {
     public:
-        using levelGenerator::getRandomNumber; 
+        using levelGenerator::getRandomNumber;
+        using levelGenerator::calculateMinimumNodeSize;  
         using levelGenerator::calculateLevelSize; 
         using levelGenerator::calculateDesiredNodeSize; 
         using levelGenerator::calculateRecursionsAmount; 
         using levelGenerator::splitNodeBSP; 
+        using levelGenerator::createBSP;
+        using levelGenerator::visualization;
+        using levelGenerator::createVisualization;
+        using levelGenerator::traverseBSP;
+        using levelGenerator::createRoom; 
 };
 
 
@@ -98,47 +104,86 @@ TEST(levelGeneratorSuite, testRandomNumber)
 }
 
 
+TEST(levelGeneratorSuite, testCalculateMinimumNodeSize)
+{
+    wait();
+    testLevelGeneratorClass generator;
+
+
+    for(int i = 1; i < 6; i++)
+    {
+        int nodeSize = generator.calculateMinimumNodeSize(i, 10);
+
+        switch (i) 
+        {
+            case 1:
+                ASSERT_EQ(nodeSize, 20);
+                break;
+            case 2:
+                ASSERT_EQ(nodeSize, 40);
+                break;
+            case 3:
+                ASSERT_EQ(nodeSize, 80);
+                break;
+            case 4:
+                ASSERT_EQ(nodeSize, 160);
+                break;
+            case 5:
+                ASSERT_EQ(nodeSize, 320);
+                break;
+            case 6:
+                ASSERT_EQ(nodeSize, 640);
+                break;
+            case 7:
+                ASSERT_EQ(nodeSize, 1280);
+                break;
+            default:
+                std::cout << "iteration " << i << std::endl;
+                throw std::runtime_error("error");
+        }
+    }
+}
+
+
 TEST(levelGeneratorSuite, testCalculateLevelSize)
 {
     wait();
     testLevelGeneratorClass generator;
 
 
-    for(int i = 1; i < 9; i++)
+    for(int i = 1; i < 6; i++)
     {
-        int levelSize = generator.calculateLevelSize(i);
+        int levelSize = generator.calculateLevelSize(i, 10);
 
         switch (i) 
         {
             case 1:
-                ASSERT_EQ(levelSize, 53);
+                ASSERT_GE(levelSize, 20);
+                ASSERT_LE(levelSize, 20+(2*i*10));
                 break;
             case 2:
-                ASSERT_EQ(levelSize, 56);
+                ASSERT_GE(levelSize, 40);
+                ASSERT_LE(levelSize, 40+(2*i*10));
                 break;
             case 3:
-                ASSERT_EQ(levelSize, 59);
+                ASSERT_GE(levelSize, 80);
+                ASSERT_LE(levelSize, 80+(2*i*10));
                 break;
             case 4:
-                ASSERT_EQ(levelSize, 62);
+                ASSERT_GE(levelSize, 160);
+                ASSERT_LE(levelSize, 160+(2*i*10));
                 break;
             case 5:
-                ASSERT_EQ(levelSize, 65);
+                ASSERT_GE(levelSize, 320);
+                ASSERT_LE(levelSize, 320+(2*i*10));
                 break;
             case 6:
-                ASSERT_EQ(levelSize, 68);
+                ASSERT_GE(levelSize, 640);
+                ASSERT_LE(levelSize, 640+(2*i*10));
                 break;
             case 7:
-                ASSERT_EQ(levelSize, 71);
-                break;
-            case 8:
-                ASSERT_EQ(levelSize, 74);
-                break;
-            case 9:
-                ASSERT_EQ(levelSize, 77);
-                break;
-            case 10:
-                ASSERT_EQ(levelSize, 80);
+                ASSERT_GE(levelSize, 1280);
+                ASSERT_LE(levelSize, 1280+(2*i*10));
                 break;
             default:
                 std::cout << "iteration " << i << std::endl;
@@ -262,26 +307,122 @@ TEST(levelGeneratorSuite, testCalculateRecursionsAmount)
     }
 }
 
-
-
-TEST(levelGeneratorSuite, testSplitBSPSingle)
+TEST(levelGeneratorSuite, testSplitBSP_fail)
 {
+    wait();
+
     testLevelGeneratorClass generator;
 
-    int recursions = 1;
-    int size = 50;
-    levelGenerator::nodeBSP root = {recursions, 0, 0, 50, 50, nullptr, nullptr, nullptr};
-    generator.splitNodeBSP(&root, size);
+    for(int i = 0; i < 10000; i++)
+    {
+        int recursions = 1;
+        int levelSize = 20;
+        int size = generator.getRandomNumber(levelSize, levelSize + 50);
+        levelGenerator::nodeBSP node = {recursions, 0, 0, levelSize, levelSize , nullptr, nullptr, nullptr};
+        EXPECT_THROW(generator.splitNodeBSP(&node, size), std::runtime_error);
+    }
 
-    ASSERT_TRUE(root.room != nullptr);
-    ASSERT_NE(root.firstNode, nullptr);
-    ASSERT_NE(root.secondNode, nullptr);
+}
 
-    ASSERT_TRUE(false);
+TEST(levelGeneratorSuite, testSplitBSP_normal)
+{
+    wait();
+    testLevelGeneratorClass generator;
+
+    std::cout << "testing level 1 recursion..." << std::endl;
+    for(int i = 0; i < 10000; i++)
+    {
+        int recursions = 1;
+        int size = 10;
+        int levelSize = 20*3;
+        levelGenerator::nodeBSP root = {recursions, 0, 0, levelSize, levelSize , nullptr, nullptr, nullptr};
+        generator.splitNodeBSP(&root, size);
+
+        ASSERT_TRUE(root.room == nullptr);
+        ASSERT_FALSE(root.firstNode == nullptr);
+        ASSERT_FALSE(root.secondNode == nullptr);
+    }
+    std::cout << "level 1 recursion passed!" << std::endl;
+
+    std::cout << "testing level 2 recursion..." << std::endl;
+    for(int i = 0; i < 10000; i++)
+    {
+        int recursions = 2;
+        int size = 10;
+        int levelSize = 40*3;
+        levelGenerator::nodeBSP root = {recursions, 0, 0, levelSize, levelSize , nullptr, nullptr, nullptr};
+        generator.splitNodeBSP(&root, size);
+
+        ASSERT_TRUE(root.room == nullptr);
+        ASSERT_FALSE(root.firstNode == nullptr);
+        ASSERT_FALSE(root.secondNode == nullptr);
+    }
+    std::cout << "level 2 recursion passed!" << std::endl;
+
+    std::cout << "testing level 3 recursion..." << std::endl;
+    for(int i = 0; i < 10000; i++)
+    {
+        int recursions = 3;
+        int size = 10;
+        int levelSize = 80*3;
+        levelGenerator::nodeBSP root = {recursions, 0, 0, levelSize, levelSize , nullptr, nullptr, nullptr};
+        generator.splitNodeBSP(&root, size);
+
+        ASSERT_TRUE(root.room == nullptr);
+        ASSERT_FALSE(root.firstNode == nullptr);
+        ASSERT_FALSE(root.secondNode == nullptr);
+    }
+    std::cout << "level 3 recursion passed!" << std::endl;
+
+    std::cout << "testing level 4 recursion..." << std::endl;
+    for(int i = 0; i < 10000; i++)
+    {
+        int recursions = 4;
+        int size = 10;
+        int levelSize = 160*3;
+        levelGenerator::nodeBSP root = {recursions, 0, 0, levelSize, levelSize , nullptr, nullptr, nullptr};
+        generator.splitNodeBSP(&root, size);
+
+        ASSERT_TRUE(root.room == nullptr);
+        ASSERT_FALSE(root.firstNode == nullptr);
+        ASSERT_FALSE(root.secondNode == nullptr);
+    }
+    std::cout << "level 4 recursion passed!" << std::endl;
+
+    std::cout << "testing level 5 recursion..." << std::endl;
+    for(int i = 0; i < 10000; i++)
+    {
+        int recursions = 5;
+        int size = 10;
+        int levelSize = 320*3;
+        levelGenerator::nodeBSP root = {recursions, 0, 0, levelSize, levelSize , nullptr, nullptr, nullptr};
+        generator.splitNodeBSP(&root, size);
+
+        ASSERT_TRUE(root.room == nullptr);
+        ASSERT_FALSE(root.firstNode == nullptr);
+        ASSERT_FALSE(root.secondNode == nullptr);
+    }
+    std::cout << "level 5 recursion passed!" << std::endl;
+    
+
+    std::cout << "testing level 6 recursion..." << std::endl;
+    for(int i = 0; i < 10000; i++)
+    {
+        int recursions = 6;
+        int size = 10;
+        int levelSize = 640*3;
+        levelGenerator::nodeBSP root = {recursions, 0, 0, levelSize, levelSize , nullptr, nullptr, nullptr};
+        generator.splitNodeBSP(&root, size);
+
+        ASSERT_TRUE(root.room == nullptr);
+        ASSERT_FALSE(root.firstNode == nullptr);
+        ASSERT_FALSE(root.secondNode == nullptr);
+    }
+    std::cout << "level 6 recursion passed!" << std::endl;
 }
 
 
-TEST(levelGeneratorSuite, testSplitBSP)
+TEST(levelGeneratorSuite, testSplitBSP_edge)
 {
     wait();
 
@@ -417,6 +558,126 @@ TEST(levelGeneratorSuite, testSplitBSP)
     std::cout << "level 6 recursion passed!" << std::endl;
 
 }
+
+TEST(levelGeneratorSuite, testCreateBSP)
+{
+    wait();
+
+    testLevelGeneratorClass generator;
+
+    for(int x = 0; x < 100; x++)
+    {
+        for(int i = 1; i < 35; i++)
+        {
+            levelGenerator::BSP bsp = generator.createBSP(i);
+        }
+    } 
+}
+
+TEST(levelGeneratorSuite, testVisalization)
+{
+    wait();
+
+    testLevelGeneratorClass generator;
+    std::string received = generator.visualization(100, 50, 30, 40);
+    std::string expected = "100\\le x\\le130\\left\\{50\\le y\\le90\\right\\}";
+
+    ASSERT_EQ(received, expected);
+}
+
+
+TEST(levelGeneratorSuite, testCreateVisalizationNode)
+{
+    wait();
+
+    testLevelGeneratorClass generator;
+
+    levelGenerator::nodeBSP node = {0, 0, 0, 50, 100, nullptr, nullptr, nullptr};
+
+    std::string received = generator.createVisualization(&node);
+    std::string expected = "0\\le x\\le50\\left\\{0\\le y\\le100\\right\\}";
+
+    ASSERT_EQ(received, expected);
+
+}
+
+TEST(levelGeneratorSuite, testCreateVisalizationRoom)
+{
+    wait();
+
+    testLevelGeneratorClass generator;
+
+    levelGenerator::roomBox room = {0, 0, 50, 100};
+
+    std::string received = generator.createVisualization(&room);
+    std::string expected = "0\\le x\\le50\\left\\{0\\le y\\le100\\right\\}";
+
+    ASSERT_EQ(received, expected);
+}
+
+
+TEST(levelGeneratorSuite, testTraverseBSP)
+{
+    wait();
+
+    testLevelGeneratorClass generator;
+
+    for(int x = 0; x < 100; x++)
+    {
+        for(int i = 1; i < 35; i++)
+        {
+            levelGenerator::BSP bsp = generator.createBSP(i);
+            generator.traverseBSP(&bsp, &bsp.root);
+            ASSERT_GE(bsp.roomsAmount, 0);
+            if(bsp.roomsAmount % 2 != 0)
+            {
+                std::cerr << "dungeon depth: "<< i <<", recusions amount: "<< bsp.recursionAmount<<", nodes amount: "<< bsp.nodesAmount<<", rooms amount:" << bsp.roomsAmount << std::endl;
+            }
+            ASSERT_TRUE(bsp.roomsAmount % 2 == 0);
+
+        }
+    } 
+}
+
+TEST(levelGeneratorSuite, testCreateRoom)
+{
+    wait();
+
+    testLevelGeneratorClass generator;
+
+    for(int x = 0; x < 1000; x++)
+    {   
+        int width = 50;
+        int height = 100;
+        levelGenerator::nodeBSP node = {0, 0, 0, width, height, nullptr, nullptr, nullptr};
+        levelGenerator::roomBox room = generator.createRoom(&node);
+        ASSERT_GT(room.width, 0);
+        ASSERT_GT(room.height, 0);
+        ASSERT_LE(room.width, width);
+        ASSERT_LE(room.height, height);
+
+        ASSERT_GE(room.posX, node.posX);
+        ASSERT_GE(room.posY, node.posY);
+
+        ASSERT_LE(room.posX - room.width, node.posX + node.width);
+        ASSERT_LE(room.posY - room.height, node.posY + node.height);
+    } 
+}
+
+TEST(levelGeneratorSuite, testCreateLevel)
+{
+    wait();
+
+    for(int x = 0; x < 10; x++)
+    {   
+        for(int i = 1; i < 35; i++)
+        {   
+            levelGenerator generator;
+            generator.createLevel(i);
+        }
+    } 
+}
+
 
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);

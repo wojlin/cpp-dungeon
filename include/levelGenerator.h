@@ -23,6 +23,14 @@ class levelGenerator
             int height;
         };
 
+        struct corridorLine
+        {
+            int startX;
+            int startY;
+            int length;
+            bool isVertical;
+        };
+
         struct nodeBSP
         {
             int depth;
@@ -65,8 +73,11 @@ class levelGenerator
 
         // ### ROOMS ###
 
+        //creates room for given bsp node
         roomBox createRoom(nodeBSP* node);
 
+        //creates corridors for evely room in dunegon
+        std::vector<corridorLine> createCorridors(BSP* bsp);
 
 
         // ### BSP ###

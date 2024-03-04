@@ -27,30 +27,16 @@ int levelGenerator::getRandomNumber(int minmumNumber, int maximumNumber)
 void levelGenerator::traverseBSP(BSP* bsp, nodeBSP* node)
 {
     
-    std::cout << "node";
-    std::cout << " depth:" << node->depth;
-    std::cout << " x:" << node->posX;
-    std::cout << " y:" << node->posY;
-    std::cout << " w:" << node->width;
-    std::cout << " h:" << node->height;
-    
     bsp->nodesAmount += 1;
     bsp->visulatizationBSP += (createVisualization(node) + "\n");
 
 
     if(node->room != nullptr)
     {
-        std::cout << " room ";
-        std::cout << " x:" << node->posX;
-        std::cout << " y:" << node->posY;
-        std::cout << " w:" << node->width;
-        std::cout << " h:" << node->height;
         bsp->rooms.push_back(node->room);
         bsp->roomsAmount += 1;
-        bsp->visulatizationRooms += (createVisualization(node) + "\n");
+        bsp->visulatizationRooms += (createVisualization(node->room) + "\n");
     }
-
-    std::cout << std::endl;
     
     if(node->firstNode != nullptr)
     {
@@ -100,17 +86,22 @@ levelGenerator::BSP levelGenerator::createBSP(int dungeonDepth)
     //rooms amount = recursions^2
     int recursionsAmount = calculateRecursionsAmount(dungeonDepth);
 
-    //step 2: choose level size
-    int levelSize = calculateLevelSize(dungeonDepth);
 
-    //step 3: choose node size
+    //step 2: choose node size
     int desiredNodeSize = calculateDesiredNodeSize(dungeonDepth);
+
+    //step 3: choose level size
+    int levelSize = calculateLevelSize(recursionsAmount, desiredNodeSize);
+
+    
     
     nodeBSP root = {recursionsAmount,0, 0, levelSize, levelSize, nullptr, nullptr, nullptr};
 
     splitNodeBSP(&root, desiredNodeSize);
     
     BSP bsp;
+    bsp.nodesAmount = 0;
+    bsp.roomsAmount = 0;
     bsp.root = root;
     bsp.recursionAmount = recursionsAmount;
     
@@ -270,17 +261,61 @@ std::string levelGenerator::createVisualization(roomBox* room)
 levelGenerator::roomBox levelGenerator::createRoom(nodeBSP* node)
 {
     roomBox room;
-    room.posX = node->posX;
-    room.posY = node->posY;
-    room.width = node->width;
-    room.height = node->height;
+
+    //step 1: choose room size
+    int minRoomSize = 7;
+    int width = getRandomNumber(minRoomSize, node->width);
+    int height = getRandomNumber(minRoomSize, node->height);
+    room.width = width;
+    room.height = height;
+
+    //step 2: choose room position
+
+    int posX = getRandomNumber(node->posX, node->posX + node->width - width);
+    int posY = getRandomNumber(node->posY, node->posY + node->height - height);
+    room.posX = posX;
+    room.posY = posY;
+
     return room;
+}
+
+std::vector<levelGenerator::corridorLine> levelGenerator::createCorridors(BSP* bsp)
+{
+    for(int i = 0; i < bsp->roomsAmount; i+=2)
+    {
+        roomBox* room1 = bsp->rooms[i];
+        roomBox* room2 = bsp->rooms[i+1];
+
+        int xMin = std::max(room1->posX, room2->posX);
+        int xMax = std::min(room1->posX+room1->width, room2->posX+room2->width);
+
+        int yMin = std::max(room1->posY, room2->posY);
+        int yMax = std::min(room1->posY+room1->height, room2->posY+room2->height);
+        
+        if(xMin < xMax)
+        {
+            std::cout << "vertical corridor" << std::endl;
+            int startPoint = getRandomNumber(xMin, xMax);
+            //int length = 
+        }
+        else if(yMin < yMax)
+        {
+            std::cout << "horizonal corridor" << std::endl;
+            int startPoint = getRandomNumber(yMin, yMax);
+        }
+        else
+        {
+            std::cout << "rooms dont overlap!" << std::endl;
+        }
+
+    }
 }
 
 level levelGenerator::createLevel(int dungeonDepth)
 {
     BSP bsp = createBSP(dungeonDepth);
     traverseBSP(&bsp, &bsp.root);
+    createCorridors(&bsp);
     std::cout << "recursion amount: " << bsp.recursionAmount << std::endl;
     std::cout << "nodes amount: " << bsp.nodesAmount << std::endl;
     std::cout << "rooms amount: " << bsp.roomsAmount << std::endl;
