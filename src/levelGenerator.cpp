@@ -258,6 +258,28 @@ std::string levelGenerator::createVisualization(roomBox* room)
     return visualization(x,y,w,h);
 }
 
+std::string levelGenerator::createVisualization(corridorLine* line)
+{
+    
+    int x1 = line->startX;
+    int y1 = line->startY;
+    int x2 = line->endX;
+    int y2 = line->endY;
+
+    std::string desmos; 
+    desmos += "\\left(\\left(1-t\\right)";
+    desmos += std::to_string(x1);
+    desmos += "+t";
+    desmos += std::to_string(x2);
+    desmos += ",\\left(1-t\\right)";
+    desmos += std::to_string(y1);
+    desmos += "+t";
+    desmos += std::to_string(y2);
+    desmos += "\\right)";
+
+    return desmos;
+}
+
 levelGenerator::roomBox levelGenerator::createRoom(nodeBSP* node)
 {
     roomBox room;
@@ -281,6 +303,8 @@ levelGenerator::roomBox levelGenerator::createRoom(nodeBSP* node)
 
 std::vector<levelGenerator::corridorLine> levelGenerator::createCorridors(BSP* bsp)
 {
+    std::vector<levelGenerator::corridorLine> lines;
+
     for(int i = 0; i < bsp->roomsAmount; i+=2)
     {
         roomBox* room1 = bsp->rooms[i];
@@ -292,16 +316,29 @@ std::vector<levelGenerator::corridorLine> levelGenerator::createCorridors(BSP* b
         int yMin = std::max(room1->posY, room2->posY);
         int yMax = std::min(room1->posY+room1->height, room2->posY+room2->height);
         
+
+
         if(xMin < xMax)
         {
             std::cout << "vertical corridor" << std::endl;
-            int startPoint = getRandomNumber(xMin, xMax);
-            //int length = 
+            int startX = getRandomNumber(xMin, xMax);
+            int startY = yMin;
+            int endX = startX;
+            int endY = yMax ;
+            corridorLine line = {startX, startY, endX, endY};
+            bsp->visulatizationCorridors += (createVisualization(&line) + "\n");
+            lines.push_back(line);
         }
         else if(yMin < yMax)
         {
             std::cout << "horizonal corridor" << std::endl;
-            int startPoint = getRandomNumber(yMin, yMax);
+            int startX = xMax;
+            int startY = getRandomNumber(yMin, yMax); 
+            int endX = xMin;
+            int endY = startY;
+            corridorLine line = {startX, startY, endX, endY};
+            bsp->visulatizationCorridors += (createVisualization(&line) + "\n");
+            lines.push_back(line);
         }
         else
         {
@@ -309,6 +346,9 @@ std::vector<levelGenerator::corridorLine> levelGenerator::createCorridors(BSP* b
         }
 
     }
+
+    return lines;
+
 }
 
 level levelGenerator::createLevel(int dungeonDepth)
@@ -323,6 +363,8 @@ level levelGenerator::createLevel(int dungeonDepth)
     std::cout << bsp.visulatizationBSP << std::endl;
     std::cout << "rooms visualization: " << std::endl;
     std::cout << bsp.visulatizationRooms << std::endl;
+    std::cout << "corridors visualization: " << std::endl;
+    std::cout << bsp.visulatizationCorridors << std::endl;
 
     return level();
 }

@@ -27,8 +27,8 @@ class levelGenerator
         {
             int startX;
             int startY;
-            int length;
-            bool isVertical;
+            int endX;
+            int endY;
         };
 
         struct nodeBSP
@@ -48,6 +48,7 @@ class levelGenerator
             nodeBSP root;
             std::string visulatizationBSP;
             std::string visulatizationRooms;
+            std::string visulatizationCorridors;
             int recursionAmount;
             int roomsAmount;
             int nodesAmount;
@@ -67,6 +68,7 @@ class levelGenerator
 
         std::string createVisualization(nodeBSP* node);
         std::string createVisualization(roomBox* room);
+        std::string createVisualization(corridorLine* line);
         std::string visualization(int x, int y, int w, int h);
         
 
@@ -76,7 +78,7 @@ class levelGenerator
         //creates room for given bsp node
         roomBox createRoom(nodeBSP* node);
 
-        //creates corridors for evely room in dunegon
+        //creates corridors for every room in dunegon
         std::vector<corridorLine> createCorridors(BSP* bsp);
 
 
