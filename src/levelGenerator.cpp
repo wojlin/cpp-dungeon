@@ -48,6 +48,14 @@ void levelGenerator::traverseBSP(BSP* bsp, nodeBSP* node)
         traverseBSP(bsp, node->secondNode);
     }
 
+    if(node->depth < bsp->root.depth && node->depth > 0)
+    {
+        corridorLine line = createCorridor(node);
+        node->corridor = new corridorLine(line);
+        bsp->corridors.push_back(node->corridor);
+        bsp->corridorsAmount +=1;
+        bsp->visulatizationCorridors += (createVisualization(node->corridor) + "\n");   
+    }
 }
 
 int levelGenerator::calculateMinimumNodeSize(int recursionsAmount, int desiredRoomSize)
@@ -301,14 +309,15 @@ levelGenerator::roomBox levelGenerator::createRoom(nodeBSP* node)
     return room;
 }
 
-std::vector<levelGenerator::corridorLine> levelGenerator::createCorridors(BSP* bsp)
+levelGenerator::corridorLine levelGenerator::createCorridor(nodeBSP* node)
 {
-    std::vector<levelGenerator::corridorLine> lines;
 
-    for(int i = 0; i < bsp->roomsAmount; i+=2)
+    corridorLine line;
+
+    if(node->depth == 1)
     {
-        roomBox* room1 = bsp->rooms[i];
-        roomBox* room2 = bsp->rooms[i+1];
+        roomBox* room1 = node->firstNode->room;
+        roomBox* room2 = node->secondNode->room;
 
         int xMin = std::max(room1->posX, room2->posX);
         int xMax = std::min(room1->posX+room1->width, room2->posX+room2->width);
@@ -320,34 +329,62 @@ std::vector<levelGenerator::corridorLine> levelGenerator::createCorridors(BSP* b
 
         if(xMin < xMax)
         {
-            std::cout << "vertical corridor" << std::endl;
             int startX = getRandomNumber(xMin, xMax);
             int startY = yMin;
             int endX = startX;
             int endY = yMax ;
-            corridorLine line = {startX, startY, endX, endY};
-            bsp->visulatizationCorridors += (createVisualization(&line) + "\n");
-            lines.push_back(line);
+            line = {startX, startY, endX, endY};     
         }
         else if(yMin < yMax)
         {
-            std::cout << "horizonal corridor" << std::endl;
             int startX = xMax;
             int startY = getRandomNumber(yMin, yMax); 
             int endX = xMin;
             int endY = startY;
-            corridorLine line = {startX, startY, endX, endY};
-            bsp->visulatizationCorridors += (createVisualization(&line) + "\n");
-            lines.push_back(line);
+            line = {startX, startY, endX, endY};
         }
         else
         {
-            std::cout << "rooms dont overlap!" << std::endl;
+
+            int startX = getRandomNumber(room1->posX, room1->posX+room1->width);
+            int startY = room1->posY;
+            int endX = room2->posX;
+            int endY = getRandomNumber(room2->posY, room2->posY+room2->height);
+
+            if(startY < endY)
+            {
+                startY+= room1->height;
+            }
+
+            if(startX > endX)
+            {
+                endX+= room2->width;
+            }
+            
+
+            line = {startX, startY, endX, endY};
+            std::cout << startX << " " << startY << "     " << endX << " " << endY << std::endl;
+            std::cout << createVisualization(&line) << std::endl;
+        }
+    }
+    else
+    {
+        std::cout << "connecting nodes..." << std::endl;
+
+        nodeBSP* node1 = node->firstNode;
+        nodeBSP* node2 = node->secondNode;
+
+        if(node1->room != nullptr && node2->room != nullptr)
+        {
+
         }
 
-    }
+        //if(node1.c)
 
-    return lines;
+    }
+    
+
+    return line;
 
 }
 
@@ -355,7 +392,6 @@ level levelGenerator::createLevel(int dungeonDepth)
 {
     BSP bsp = createBSP(dungeonDepth);
     traverseBSP(&bsp, &bsp.root);
-    createCorridors(&bsp);
     std::cout << "recursion amount: " << bsp.recursionAmount << std::endl;
     std::cout << "nodes amount: " << bsp.nodesAmount << std::endl;
     std::cout << "rooms amount: " << bsp.roomsAmount << std::endl;

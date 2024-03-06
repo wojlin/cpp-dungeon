@@ -46,6 +46,7 @@ class testLevelGeneratorClass : public levelGenerator
         using levelGenerator::createVisualization;
         using levelGenerator::traverseBSP;
         using levelGenerator::createRoom; 
+        using levelGenerator::createCorridor;
 };
 
 
@@ -662,6 +663,139 @@ TEST(levelGeneratorSuite, testCreateRoom)
         ASSERT_LE(room.posX - room.width, node.posX + node.width);
         ASSERT_LE(room.posY - room.height, node.posY + node.height);
     } 
+}
+
+TEST(levelGeneratorSuite, testCreateCorridors)
+{
+    wait();
+    testLevelGeneratorClass generator;
+
+    int width = 10;
+    int height = 10;
+    int room1X;
+    int room1Y;
+    int room2X;
+    int room2Y;
+
+    levelGenerator::roomBox room1;
+    levelGenerator::roomBox room2;
+    levelGenerator::nodeBSP node1;
+    levelGenerator::nodeBSP node2;
+    levelGenerator::nodeBSP root;
+    std::vector<levelGenerator::roomBox*> rooms;
+    levelGenerator::BSP bsp;
+    levelGenerator::corridorLine corridor;
+
+    //test horizontal
+    room1X = 0;
+    room1Y = 0;
+    room2X = 20;
+    room2Y = 0;
+    room1 = {room1X, room1Y, width, height};
+    room2 = {room2X, room2Y, width, height};
+    node1 = {0, 0, 0, 10, 10, nullptr, nullptr, &room1};
+    node2 = {0, 20, 0, 10, 10, nullptr, nullptr, &room2};
+    root = {1, 0, 0, 30, 30, &node1, &node2, nullptr};
+    rooms = {&room1, &room2};
+    bsp = {root, "", "", "", 1, 3, 2, 0, rooms};
+    corridor = generator.createCorridor(&root);
+
+    ASSERT_EQ(corridor.startX, room1X + width);
+    ASSERT_EQ(corridor.endX, room2X);
+    ASSERT_EQ(corridor.startY, corridor.endY);
+
+
+    //test vertical
+    room1X = 0;
+    room1Y = 0;
+    room2X = 0;
+    room2Y = 20;
+    room1 = {room1X, room1Y, width, height};
+    room2 = {room2X, room2Y, width, height};
+    node1 = {0, 0, 0, 10, 10, nullptr, nullptr, &room1};
+    node2 = {0, 0, 20, 10, 10, nullptr, nullptr, &room2};
+    root = {1, 0, 0, 30, 30, &node1, &node2, nullptr};
+    rooms = {&room1, &room2};
+    bsp = {root, "", "", "", 1, 3, 2, 0, rooms};
+    corridor = generator.createCorridor(&root);
+
+    ASSERT_EQ(corridor.endY, room1Y + height);
+    ASSERT_EQ(corridor.startY, room2Y);
+    ASSERT_EQ(corridor.startX, corridor.endX);
+
+
+    //test bend 1
+    room1X = 0;
+    room1Y = 20;
+    room2X = 20;
+    room2Y = 0;
+    room1 = {room1X, room1Y, width, height};
+    room2 = {room2X, room2Y, width, height};
+    node1 = {0, 0, 0, 15, 30, nullptr, nullptr, &room1};
+    node2 = {0, 15, 0, 15, 30, nullptr, nullptr, &room2};
+    root = {1, 0, 0, 30, 30, &node1, &node2, nullptr};
+    rooms = {&room2, &room1};
+    bsp = {root, "", "", "", 1, 3, 2, 0, rooms};
+    corridor = generator.createCorridor(&root);
+
+    ASSERT_EQ(corridor.startY, room1Y);
+    ASSERT_EQ(corridor.endX, room2X);
+
+    //test bend 2
+    room1X = 0;
+    room1Y = 0;
+    room2X = 20;
+    room2Y = 20;
+    room1 = {room1X, room1Y, width, height};
+    room2 = {room2X, room2Y, width, height};
+    node1 = {0, 0, 0, 15, 30, nullptr, nullptr, &room1};
+    node2 = {0, 15, 0, 15, 30, nullptr, nullptr, &room2};
+    root = {1, 0, 0, 30, 30, &node1, &node2, nullptr};
+    rooms = {&room2, &room1};
+    bsp = {root, "", "", "", 1, 3, 2, 0, rooms};
+    corridor = generator.createCorridor(&root);
+
+    ASSERT_EQ(corridor.startY, room1Y + room1.height);
+    ASSERT_EQ(corridor.endX, room2X);
+
+
+    //test bend 3
+    room1X = 20;
+    room1Y = 0;
+    room2X = 0;
+    room2Y = 20;
+    room1 = {room1X, room1Y, width, height};
+    room2 = {room2X, room2Y, width, height};
+    node1 = {0, 0, 0, 15, 30, nullptr, nullptr, &room1};
+    node2 = {0, 15, 0, 15, 30, nullptr, nullptr, &room2};
+    root = {1, 0, 0, 30, 30, &node1, &node2, nullptr};
+    rooms = {&room2, &room1};
+    bsp = {root, "", "", "", 1, 3, 2, 0, rooms};
+    corridor = generator.createCorridor(&root);
+
+    ASSERT_EQ(corridor.startY, room1Y + room1.height);
+    ASSERT_EQ(corridor.endX, room2X + room2.width);
+
+
+    //test bend 4
+    room1X = 20;
+    room1Y = 20;
+    room2X = 0;
+    room2Y = 0;
+    room1 = {room1X, room1Y, width, height};
+    room2 = {room2X, room2Y, width, height};
+    node1 = {0, 0, 0, 15, 30, nullptr, nullptr, &room1};
+    node2 = {0, 15, 0, 15, 30, nullptr, nullptr, &room2};
+    root = {1, 0, 0, 30, 30, &node1, &node2, nullptr};
+    rooms = {&room2, &room1};
+    bsp = {root, "", "", "", 1, 3, 2, 0, rooms};
+    corridor = generator.createCorridor(&root);
+
+    ASSERT_EQ(corridor.startY, room1Y);
+    ASSERT_EQ(corridor.endX, room2X + room2.width);
+    
+
+
 }
 
 TEST(levelGeneratorSuite, testCreateLevel)

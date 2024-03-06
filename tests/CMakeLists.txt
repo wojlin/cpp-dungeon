@@ -25,6 +25,7 @@ testCreateVisalizationRoom
 testCreateVisalizationNode
 testTraverseBSP
 testCreateRoom
+testCreateCorridors
 testCreateLevel)
 
 

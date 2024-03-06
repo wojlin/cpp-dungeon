@@ -41,6 +41,7 @@ class levelGenerator
             nodeBSP* firstNode;
             nodeBSP* secondNode;
             roomBox* room;
+            corridorLine* corridor;
         };
 
         struct BSP
@@ -50,9 +51,11 @@ class levelGenerator
             std::string visulatizationRooms;
             std::string visulatizationCorridors;
             int recursionAmount;
-            int roomsAmount;
             int nodesAmount;
+            int roomsAmount;
+            int corridorsAmount;    
             std::vector<roomBox*> rooms;
+            std::vector<corridorLine*> corridors;
         };
         
         level createLevel(int dungeonDepth);
@@ -78,8 +81,8 @@ class levelGenerator
         //creates room for given bsp node
         roomBox createRoom(nodeBSP* node);
 
-        //creates corridors for every room in dunegon
-        std::vector<corridorLine> createCorridors(BSP* bsp);
+        //creates corridors for given node in dunegon
+        corridorLine createCorridor(nodeBSP* node);
 
 
         // ### BSP ###
