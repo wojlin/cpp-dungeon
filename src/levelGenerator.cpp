@@ -48,7 +48,7 @@ void levelGenerator::traverseBSP(BSP* bsp, nodeBSP* node)
         traverseBSP(bsp, node->secondNode);
     }
 
-    if(node->depth < bsp->root.depth && node->depth > 0)
+    if(node->depth > 0)
     {
         corridorLine line = createCorridor(node);
         node->corridor = new corridorLine(line);
@@ -56,6 +56,29 @@ void levelGenerator::traverseBSP(BSP* bsp, nodeBSP* node)
         bsp->corridorsAmount +=1;
         bsp->visulatizationCorridors += (createVisualization(node->corridor) + "\n");   
     }
+}
+
+
+std::vector<levelGenerator::roomBox*> levelGenerator::findRooms(nodeBSP* node)
+{
+    std::vector<roomBox*> rooms;
+
+    if(node->room == nullptr)
+    {
+        nodeBSP* node1 = node->firstNode;
+        nodeBSP* node2 = node->secondNode;    
+        std::vector<roomBox*> foundRooms1 = findRooms(node1);
+        std::vector<roomBox*> foundRooms2 = findRooms(node2);
+        rooms.insert(rooms.end(), foundRooms1.begin(), foundRooms1.end());
+        rooms.insert(rooms.end(), foundRooms2.begin(), foundRooms2.end());
+    }
+    else
+    {
+        rooms.push_back(node->room);
+    }
+
+    return rooms;
+    
 }
 
 int levelGenerator::calculateMinimumNodeSize(int recursionsAmount, int desiredRoomSize)
@@ -363,23 +386,93 @@ levelGenerator::corridorLine levelGenerator::createCorridor(nodeBSP* node)
             
 
             line = {startX, startY, endX, endY};
-            std::cout << startX << " " << startY << "     " << endX << " " << endY << std::endl;
-            std::cout << createVisualization(&line) << std::endl;
         }
     }
-    else
+    else if(node->depth > 1)
     {
         std::cout << "connecting nodes..." << std::endl;
 
         nodeBSP* node1 = node->firstNode;
         nodeBSP* node2 = node->secondNode;
 
-        if(node1->room != nullptr && node2->room != nullptr)
+        //step 1: determine if node is split vertical or horizontal
+        bool isVerticalSplit = false;
+        if(node1->posX == node2->posX)
         {
-
+            isVerticalSplit = true;
         }
 
-        //if(node1.c)
+        //step 3: decide merge direction
+        bool mergeLeft = false;
+        bool mergeRight = false;
+        bool mergeTop = false;
+        bool mergeBottom = false;
+        if(isVerticalSplit)
+        {
+            // top
+            if(node1->posY > node2->posY)
+            {
+                node1 = node->secondNode;
+                node2 = node->firstNode;
+                mergeTop = true;
+            }
+            // bottom
+            else
+            {
+                node1 = node->firstNode;
+                node2 = node->secondNode;
+                mergeBottom = true;
+            }
+        }
+        else
+        {
+            // right
+            if(node1->posX > node2->posX)
+            {
+                node1 = node->secondNode;
+                node2 = node->firstNode;
+                mergeRight = true;
+            }
+            // left
+            else
+            {
+                node1 = node->firstNode;
+                node2 = node->secondNode;
+                mergeLeft = true;
+            }
+        }
+
+        //step 2: find all rooms contained in that node
+        std::vector<levelGenerator::roomBox*> rooms1 = findRooms(node1);
+        std::vector<levelGenerator::roomBox*> rooms2 = findRooms(node2);
+
+
+        //step 4: calculate merge spots
+        struct mergeSpot
+        {
+            int posX1;
+            int posY1;
+            int posX2;
+            int posY2;
+        };
+
+        std::vector<mergeSpot> spots;
+
+        if(mergeLeft)
+        {
+            for(int a = 0; a < rooms1.size(); a++)
+            {
+                int minY1 = rooms1[a]->posY;
+                int maxY1 = rooms1[a]->posY + rooms1[a]->height;
+
+                for(int b = 0; b < rooms2.size(); b++)
+                {
+                    int minY2 = rooms2[b]->posY;
+                    int maxY2 = rooms2[b]->posY + rooms1[b]->height;
+                }
+            }
+        }
+
 
     }
     

@@ -63,7 +63,7 @@ class levelGenerator
     protected:
 
         
-
+        std::vector<roomBox*> findRooms(nodeBSP* node);
 
 
 
