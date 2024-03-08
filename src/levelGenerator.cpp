@@ -403,10 +403,6 @@ levelGenerator::corridorLine levelGenerator::createCorridor(nodeBSP* node)
         }
 
         //step 3: decide merge direction
-        bool mergeLeft = false;
-        bool mergeRight = false;
-        bool mergeTop = false;
-        bool mergeBottom = false;
         if(isVerticalSplit)
         {
             // top
@@ -414,15 +410,8 @@ levelGenerator::corridorLine levelGenerator::createCorridor(nodeBSP* node)
             {
                 node1 = node->secondNode;
                 node2 = node->firstNode;
-                mergeTop = true;
             }
-            // bottom
-            else
-            {
-                node1 = node->firstNode;
-                node2 = node->secondNode;
-                mergeBottom = true;
-            }
+            // else bottom
         }
         else
         {
@@ -431,15 +420,8 @@ levelGenerator::corridorLine levelGenerator::createCorridor(nodeBSP* node)
             {
                 node1 = node->secondNode;
                 node2 = node->firstNode;
-                mergeRight = true;
             }
-            // left
-            else
-            {
-                node1 = node->firstNode;
-                node2 = node->secondNode;
-                mergeLeft = true;
-            }
+            // else left
         }
 
         //step 2: find all rooms contained in that node
@@ -456,23 +438,78 @@ levelGenerator::corridorLine levelGenerator::createCorridor(nodeBSP* node)
             int posY2;
         };
 
+
         std::vector<mergeSpot> spots;
 
-        if(mergeLeft)
+        if(isVerticalSplit)
         {
-            for(int a = 0; a < rooms1.size(); a++)
-            {
-                int minY1 = rooms1[a]->posY;
-                int maxY1 = rooms1[a]->posY + rooms1[a]->height;
+            std::cout << "merging vertical" << std::endl;
+        }
+        else
+        {
+            std::cout << "merging horizontal" << std::endl;
 
-                for(int b = 0; b < rooms2.size(); b++)
+            std::map<int, int> leftSide = {};
+            std::map<int, int> rightSide = {};
+
+            //fill left side with coords
+            for(int i = 0; i < rooms1.size(); i++)
+            {
+                for(int y = rooms1[i]->posY; y < rooms1[i]->posY+rooms1[i]->height; y++)
                 {
-                    int minY2 = rooms2[b]->posY;
-                    int maxY2 = rooms2[b]->posY + rooms1[b]->height;
+                    if(leftSide.find(y) == leftSide.end() || rooms1[i]->posX > leftSide[y]) 
+                    {
+                        leftSide[y] = rooms1[i]->posX + rooms1[i]->width;
+                    }
                 }
             }
+
+            //fill right side with coords
+            for(int i = 0; i < rooms2.size(); i++)
+            {
+                for(int y = rooms2[i]->posY; y < rooms2[i]->posY+rooms2[i]->height; y++)
+                {
+                    if(rightSide.find(y) == rightSide.end() || rooms2[i]->posX < rightSide[y]) 
+                    {
+                        rightSide[y] = rooms2[i]->posX;
+                    }
+                }
+            }
+
+            std::cout << "map1 len:" << leftSide.size() << " map2 len:" << rightSide.size() << std::endl;
+
+            for (auto a = leftSide.begin(); a != leftSide.end(); a++) 
+            {
+                for (auto b = rightSide.begin(); b != rightSide.end(); b++) 
+                {
+                    if(a->first == b->first)
+                    {   
+                        mergeSpot spot = {a->second, a->first, b->second, b->first};
+                        
+                        std::cout << "x1:" << a->second << ", y1:" << a->first << ", x2:" << b->second << "y2" << b->first << std::endl;
+                        spots.push_back(spot);
+                    }
+                }
+            }
+
+
         }
 
+
+        std::cout << spots.size() << std::endl;
+
+
+        //step 5: pick random merge spot
+        if(spots.size() > 0)
+        {
+            std::random_device rd;
+            std::mt19937 gen(rd());
+            std::uniform_int_distribution<> dis(0, spots.size() - 1);
+            int randomIndex = dis(gen);
+            mergeSpot spot = spots[randomIndex];
+            line = {spot.posX1, spot.posY1, spot.posX2, spot.posY2};
+        }
+        
 
     }
     
