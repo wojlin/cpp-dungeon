@@ -444,6 +444,49 @@ levelGenerator::corridorLine levelGenerator::createCorridor(nodeBSP* node)
         if(isVerticalSplit)
         {
             std::cout << "merging vertical" << std::endl;
+
+            std::map<int, int> bottomSide = {};
+            std::map<int, int> topSide = {};
+
+            //fill left side with coords
+            for(int i = 0; i < rooms1.size(); i++)
+            {
+                for(int x = rooms1[i]->posX; x < rooms1[i]->posX+rooms1[i]->width; x++)
+                {
+                    if(bottomSide.find(x) == bottomSide.end() || rooms1[i]->posY > bottomSide[x]) 
+                    {
+                        bottomSide[x] = rooms1[i]->posY + rooms1[i]->height;
+                    }
+                }
+            }
+
+            //fill right side with coords
+            for(int i = 0; i < rooms2.size(); i++)
+            {
+                for(int x = rooms2[i]->posX; x < rooms2[i]->posX+rooms2[i]->width; x++)
+                {
+                    if(topSide.find(x) == topSide.end() || rooms2[i]->posY < topSide[x]) 
+                    {
+                        topSide[x] = rooms2[i]->posY;
+                    }
+                }
+            }
+
+            std::cout << "map1 len:" << bottomSide.size() << " map2 len:" << topSide.size() << std::endl;
+
+            for (auto a = bottomSide.begin(); a != bottomSide.end(); a++) 
+            {
+                for (auto b = topSide.begin(); b != topSide.end(); b++) 
+                {
+                    if(a->first == b->first)
+                    {   
+                        mergeSpot spot = {a->first, a->second, b->first, b->second};
+                        
+                        std::cout << "x1:" << a->first << ", y1:" << a->second << ", x2:" << b->first << "y2" << b->second << std::endl;
+                        spots.push_back(spot);
+                    }
+                }
+            }
         }
         else
         {
