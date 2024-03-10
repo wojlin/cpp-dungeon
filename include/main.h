@@ -4,16 +4,13 @@
 #include <iostream>
 
 #include "levelGenerator.h"
+#include "levelManager.h"
 
 int launchGame(int argc, char* argv[])
 {
     levelGenerator generator;
-    //for(int i = 1; i < 35; i++)
-    //{
-    //    generator.createLevel(i);
-    //}
-    generator.createLevel(1);
-    
+    levelManager level = generator.createLevel(5);
+    level.generatePreview("preview.png", 10);
     
     std::cout << "hello world!" << std::endl;
     return 0;

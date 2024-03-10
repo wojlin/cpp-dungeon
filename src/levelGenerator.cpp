@@ -50,16 +50,12 @@ void levelGenerator::traverseBSP(BSP* bsp, nodeBSP* node)
 
     if(node->depth > 0)
     {
-        corridorLine line = createCorridor(node);
-        node->corridor = new corridorLine(line);
-        bsp->corridors.push_back(node->corridor);
-        bsp->corridorsAmount +=1;
-        bsp->visulatizationCorridors += (createVisualization(node->corridor) + "\n");   
+        createCorridor(bsp, node);  
     }
 }
 
 
-std::vector<levelGenerator::roomBox*> levelGenerator::findRooms(nodeBSP* node)
+std::vector<roomBox*> levelGenerator::findRooms(nodeBSP* node)
 {
     std::vector<roomBox*> rooms;
 
@@ -110,7 +106,7 @@ int levelGenerator::calculateLevelSize(int recusionsAmount, int desiredNodeSize)
     return static_cast<int>((pow(2,recusionsAmount)*desiredNodeSize) + randomAdd);
 }
 
-levelGenerator::BSP levelGenerator::createBSP(int dungeonDepth)
+BSP levelGenerator::createBSP(int dungeonDepth)
 {
     
     //step 1: choose rooms amount
@@ -267,6 +263,7 @@ std::string levelGenerator::visualization(int x, int y, int w, int h)
     return desmos;
 }
 
+
 //this will generate latex for demos: https://www.desmos.com/calculator/
 std::string levelGenerator::createVisualization(nodeBSP* node)
 {   
@@ -311,7 +308,7 @@ std::string levelGenerator::createVisualization(corridorLine* line)
     return desmos;
 }
 
-levelGenerator::roomBox levelGenerator::createRoom(nodeBSP* node)
+roomBox levelGenerator::createRoom(nodeBSP* node)
 {
     roomBox room;
 
@@ -332,7 +329,7 @@ levelGenerator::roomBox levelGenerator::createRoom(nodeBSP* node)
     return room;
 }
 
-levelGenerator::corridorLine levelGenerator::createCorridor(nodeBSP* node)
+void levelGenerator::createCorridor(BSP* bsp, nodeBSP* node)
 {
 
     corridorLine line;
@@ -390,7 +387,7 @@ levelGenerator::corridorLine levelGenerator::createCorridor(nodeBSP* node)
     }
     else if(node->depth > 1)
     {
-        std::cout << "connecting nodes..." << std::endl;
+        //std::cout << "connecting nodes..." << std::endl;
 
         nodeBSP* node1 = node->firstNode;
         nodeBSP* node2 = node->secondNode;
@@ -425,8 +422,8 @@ levelGenerator::corridorLine levelGenerator::createCorridor(nodeBSP* node)
         }
 
         //step 2: find all rooms contained in that node
-        std::vector<levelGenerator::roomBox*> rooms1 = findRooms(node1);
-        std::vector<levelGenerator::roomBox*> rooms2 = findRooms(node2);
+        std::vector<roomBox*> rooms1 = findRooms(node1);
+        std::vector<roomBox*> rooms2 = findRooms(node2);
 
 
         //step 4: calculate merge spots
@@ -443,7 +440,7 @@ levelGenerator::corridorLine levelGenerator::createCorridor(nodeBSP* node)
 
         if(isVerticalSplit)
         {
-            std::cout << "merging vertical" << std::endl;
+            //std::cout << "merging vertical" << std::endl;
 
             std::map<int, int> bottomSide = {};
             std::map<int, int> topSide = {};
@@ -472,7 +469,7 @@ levelGenerator::corridorLine levelGenerator::createCorridor(nodeBSP* node)
                 }
             }
 
-            std::cout << "map1 len:" << bottomSide.size() << " map2 len:" << topSide.size() << std::endl;
+            //std::cout << "map1 len:" << bottomSide.size() << " map2 len:" << topSide.size() << std::endl;
 
             for (auto a = bottomSide.begin(); a != bottomSide.end(); a++) 
             {
@@ -482,15 +479,22 @@ levelGenerator::corridorLine levelGenerator::createCorridor(nodeBSP* node)
                     {   
                         mergeSpot spot = {a->first, a->second, b->first, b->second};
                         
-                        std::cout << "x1:" << a->first << ", y1:" << a->second << ", x2:" << b->first << "y2" << b->second << std::endl;
+                        //std::cout << "x1:" << a->first << ", y1:" << a->second << ", x2:" << b->first << "y2" << b->second << std::endl;
                         spots.push_back(spot);
                     }
                 }
             }
+
+            if(spots.size() == 0)
+            {
+                mergeSpot spot = {rooms1[0]->posX, rooms1[0]->posY, rooms2[0]->posX, rooms2[0]->posY};
+                spots.push_back(spot);
+            }
+
         }
         else
         {
-            std::cout << "merging horizontal" << std::endl;
+            //std::cout << "merging horizontal" << std::endl;
 
             std::map<int, int> leftSide = {};
             std::map<int, int> rightSide = {};
@@ -519,7 +523,7 @@ levelGenerator::corridorLine levelGenerator::createCorridor(nodeBSP* node)
                 }
             }
 
-            std::cout << "map1 len:" << leftSide.size() << " map2 len:" << rightSide.size() << std::endl;
+            //std::cout << "map1 len:" << leftSide.size() << " map2 len:" << rightSide.size() << std::endl;
 
             for (auto a = leftSide.begin(); a != leftSide.end(); a++) 
             {
@@ -529,39 +533,71 @@ levelGenerator::corridorLine levelGenerator::createCorridor(nodeBSP* node)
                     {   
                         mergeSpot spot = {a->second, a->first, b->second, b->first};
                         
-                        std::cout << "x1:" << a->second << ", y1:" << a->first << ", x2:" << b->second << "y2" << b->first << std::endl;
+                        //std::cout << "x1:" << a->second << ", y1:" << a->first << ", x2:" << b->second << "y2" << b->first << std::endl;
                         spots.push_back(spot);
                     }
                 }
             }
 
 
+            if(spots.size() == 0)
+            {
+                mergeSpot spot = {rooms1[0]->posX, rooms1[0]->posY, rooms2[0]->posX, rooms2[0]->posY};
+                spots.push_back(spot);
+            }
+
+
         }
-
-
-        std::cout << spots.size() << std::endl;
-
+   
 
         //step 5: pick random merge spot
-        if(spots.size() > 0)
-        {
-            std::random_device rd;
-            std::mt19937 gen(rd());
-            std::uniform_int_distribution<> dis(0, spots.size() - 1);
-            int randomIndex = dis(gen);
-            mergeSpot spot = spots[randomIndex];
-            line = {spot.posX1, spot.posY1, spot.posX2, spot.posY2};
-        }
-        
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<> dis(0, spots.size() - 1);
+        int randomIndex = dis(gen);
+        mergeSpot spot = spots[randomIndex];
+        line = {spot.posX1, spot.posY1, spot.posX2, spot.posY2};      
 
     }
+
+
     
+    //step 6: split corridor if neeeded
+    if(line.startX != line.endX && line.startY != line.endY)
+    {
+        
+         int diffX = std::abs(line.startX - line.endX);
+        int diffY = std::abs(line.startY - line.endY);
 
-    return line;
+        // Decide whether to start with a horizontal or vertical line
+        corridorLine horizontalLine, verticalLine;
+        if (diffX > diffY) { // Start with horizontal line
+            horizontalLine = {line.startX, line.startY, line.endX, line.startY};
+            verticalLine = {line.endX, line.startY, line.endX, line.endY};
+        } else { // Start with vertical line
+            horizontalLine = {line.startX, line.startY, line.startX, line.endY};
+            verticalLine = {line.startX, line.endY, line.endX, line.endY};
+        }
 
+        bsp->corridors.push_back(new corridorLine(horizontalLine));
+        bsp->corridors.push_back(new corridorLine(verticalLine));
+        bsp->corridorsAmount +=2;
+        bsp->visulatizationCorridors += (createVisualization(&horizontalLine) + "\n"); 
+        bsp->visulatizationCorridors += (createVisualization(&verticalLine) + "\n"); 
+    }
+    else
+    {
+        bsp->corridors.push_back(new corridorLine(line));
+        bsp->corridorsAmount +=1;
+        bsp->visulatizationCorridors += (createVisualization(&line) + "\n"); 
+    }
+
+
+
+    
 }
 
-level levelGenerator::createLevel(int dungeonDepth)
+levelManager levelGenerator::createLevel(int dungeonDepth)
 {
     BSP bsp = createBSP(dungeonDepth);
     traverseBSP(&bsp, &bsp.root);
@@ -575,5 +611,5 @@ level levelGenerator::createLevel(int dungeonDepth)
     std::cout << "corridors visualization: " << std::endl;
     std::cout << bsp.visulatizationCorridors << std::endl;
 
-    return level();
+    return levelManager(dungeonDepth, bsp);
 }

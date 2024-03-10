@@ -1,6 +1,7 @@
 #ifndef LEVEL_GENERATOR_H
 #define LEVEL_GENERATOR_H
 
+#include <iostream>
 #include <random>
 #include <cmath>
 #include <vector>
@@ -9,58 +10,18 @@
 #include <sstream>
 #include <map>
 
-#include "level.h"
+#include "levelManager.h"
 
-
+#include "utils.h"
+using namespace generator;
 
 class levelGenerator
 {
     public:
 
-        struct roomBox
-        {
-            int posX;
-            int posY;
-            int width;
-            int height;
-        };
-
-        struct corridorLine
-        {
-            int startX;
-            int startY;
-            int endX;
-            int endY;
-        };
-
-        struct nodeBSP
-        {
-            int depth;
-            int posX;
-            int posY;
-            int width;
-            int height;
-            nodeBSP* firstNode;
-            nodeBSP* secondNode;
-            roomBox* room;
-            corridorLine* corridor;
-        };
-
-        struct BSP
-        {
-            nodeBSP root;
-            std::string visulatizationBSP;
-            std::string visulatizationRooms;
-            std::string visulatizationCorridors;
-            int recursionAmount;
-            int nodesAmount;
-            int roomsAmount;
-            int corridorsAmount;    
-            std::vector<roomBox*> rooms;
-            std::vector<corridorLine*> corridors;
-        };
         
-        level createLevel(int dungeonDepth);
+        
+        levelManager createLevel(int dungeonDepth);
 
     protected:
 
@@ -84,8 +45,7 @@ class levelGenerator
         roomBox createRoom(nodeBSP* node);
 
         //creates corridors for given node in dunegon
-        corridorLine createCorridor(nodeBSP* node);
-
+        void createCorridor(BSP* bsp, nodeBSP* node);
 
         // ### BSP ###
 

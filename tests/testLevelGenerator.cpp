@@ -6,7 +6,7 @@
 #include <chrono>
 
 #include "../include/levelGenerator.h"
-#include "../include/level.h"
+#include "../include/levelManager.h"
 
 class levelGeneratorSuite : public ::testing::Test {
 protected:
