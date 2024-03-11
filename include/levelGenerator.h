@@ -10,77 +10,29 @@
 #include <sstream>
 #include <map>
 
-#include "levelManager.h"
-
 #include "utils.h"
-using namespace generator;
+
+#include "layoutGenerator.h"
+#include "interiorGenerator.h"
 
 class levelGenerator
 {
     public:
+        levelGenerator(int level);
 
-        
-        
-        levelManager createLevel(int dungeonDepth);
+        void generatePreview(std::string outputPath, int scale = 10);
 
     protected:
+        generator::BSP bsp;
+        int dungeonDepth;
 
-        
-        std::vector<roomBox*> findRooms(nodeBSP* node);
+        int levelWidth;
+        int levelHeight;
+        std::vector<std::vector<manager::levelTile>> levelTiles;
 
+        layoutGenerator layoutGen;
+        interiorGenerator interiorGen;
 
-
-        // ### VISUALIZATION ###
-
-        std::string createVisualization(nodeBSP* node);
-        std::string createVisualization(roomBox* room);
-        std::string createVisualization(corridorLine* line);
-        std::string visualization(int x, int y, int w, int h);
-        
-
-
-        // ### ROOMS ###
-
-        //creates room for given bsp node
-        roomBox createRoom(nodeBSP* node);
-
-        //creates corridors for given node in dunegon
-        void createCorridor(BSP* bsp, nodeBSP* node);
-
-        // ### BSP ###
-
-        //creates bsp of dungeon
-        BSP createBSP(int dungeonDepth); 
-        
-        //this method recursively splits nodes
-        void splitNodeBSP(nodeBSP* node, int desiredRoomSize);
-        
-        //this method will traverse trough bsp tree and assign rooms etc.
-        void traverseBSP(BSP* bsp, nodeBSP* node);
-        
-
-
-        // ### CALCULATIONS ###
-
-        //calculates minimum node size based on recursions amount and node size
-        int calculateMinimumNodeSize(int recursionsAmount, int desiredNodeSize);
-        
-        //calculates level size size based on recusrions amount and desired node size
-        int calculateLevelSize(int recusionsAmount, int desiredNodeSize);
-
-        //calculates desired room size based on dungeon depth
-        int calculateDesiredNodeSize(int dungeonDepth);
-
-        //calculates recursions amount based on dungeon depth
-        int calculateRecursionsAmount(int dungeonDepth);
-        
-
-
-        // ### UTILS ###
-
-        //util function to create random number inclusive
-        int getRandomNumber(int minmumNumber, int maximumNumber);
-            
 };
 
 
