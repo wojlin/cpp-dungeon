@@ -6,7 +6,7 @@ levelGenerator::levelGenerator(int level)
     dungeonDepth = level;
 
     bsp = layoutGen.createLayout(dungeonDepth);
-    interiorGen.createInterior(dungeonDepth, &bsp);
+    interior = interiorGen.createInterior(dungeonDepth, &bsp);
 }
 
 void levelGenerator::generatePreview(std::string outputPath, int scale)
@@ -68,9 +68,18 @@ void levelGenerator::generatePreview(std::string outputPath, int scale)
         int y2 = bsp.corridors[i]->endY * scale;
 
         file << "  <line x1=\"" << x1 << "\" y1=\"" << y1 << "\" x2=\"" << x2 << "\" y2=\"" << y2
-         << "\" style=\"stroke:rgb(255,0,0);stroke-width:"<< scale <<"\" />" << std::endl;
+         << "\" style=\"stroke:rgb(0,0,0);stroke-width:"<< scale <<"\" />" << std::endl;
 
     }
+
+    // add starting point
+    file << "<rect x=\"" << interior.entrance.startingPosX  * scale << "\" y=\"" << interior.entrance.startingPosY  * scale << "\" width=\"" << scale << "\" height=\"" << scale
+         << "\" fill=\"green\" stroke=\"green\" stroke-width=\""<< scale <<"\" />" << std::endl;
+
+    // add ending point
+    file << "<rect x=\"" << interior.entrance.endingPosX * scale << "\" y=\"" << interior.entrance.endingPosY  * scale << "\" width=\"" << scale << "\" height=\"" << scale
+         << "\" fill=\"red\" stroke=\"red\" stroke-width=\""<< scale <<"\" />" << std::endl;
+
 
     // Write the SVG footer
     file << "</svg>" << std::endl;

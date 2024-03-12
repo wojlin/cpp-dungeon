@@ -14,15 +14,23 @@
 
 #include "layoutGenerator.h"
 
+using namespace generator;
+
 class interiorGenerator
 {
     public:
         interiorGenerator();
 
         
-        void createInterior(int dunegonDepth, generator::BSP* bspTree);
+        interiorElements createInterior(int dunegonDepth, generator::BSP* bsp);
 
     protected:
+        entranceCoords createEntrance(generator::BSP* bsp);
+
+        float distanceBetweenRooms(roomBox* room1, roomBox* room2);
+
+        int getRandomNumber(int minmumNumber, int maximumNumber);
+
 
 };
 

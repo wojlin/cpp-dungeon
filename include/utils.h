@@ -45,6 +45,27 @@ namespace generator
         std::vector<roomBox*> rooms;
         std::vector<corridorLine*> corridors;
     };
+
+    struct entranceCoords
+    {
+        int startingPosX;
+        int startingPosY;
+        int endingPosX;
+        int endingPosY;
+    };
+
+    struct enemy
+    {
+        int posX;
+        int posY;
+    };
+
+    struct interiorElements
+    {
+        entranceCoords entrance;
+        std::vector<enemy> enemys;
+    };
+
 }
 
 namespace manager

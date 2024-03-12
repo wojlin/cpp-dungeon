@@ -24,6 +24,8 @@ class levelGenerator
 
     protected:
         generator::BSP bsp;
+        generator::interiorElements interior;
+
         int dungeonDepth;
 
         int levelWidth;
