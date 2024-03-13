@@ -20,7 +20,13 @@ class levelGenerator
     public:
         levelGenerator(int level);
 
+        coords getPlayerPos();
+        
         void generatePreview(std::string outputPath, int scale = 10);
+
+        void print(int x, int y, int windowWidth, int windowHeight);
+        
+        std::vector<std::vector<level::levelTile*>> getLevelSector(int startX, int startY, int width, int height);
 
     protected:
         generator::BSP bsp;
@@ -30,7 +36,7 @@ class levelGenerator
 
         int levelWidth;
         int levelHeight;
-        std::vector<std::vector<manager::levelTile>> levelTiles;
+        std::vector<std::vector<level::levelTile>> levelTiles;
 
         layoutGenerator layoutGen;
         interiorGenerator interiorGen;

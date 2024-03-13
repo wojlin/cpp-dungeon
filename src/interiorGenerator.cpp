@@ -14,6 +14,8 @@ interiorElements interiorGenerator::createInterior(int dunegonDepth, BSP* bsp)
 
     interiorElements interior;
     interior.entrance = entrance;
+    interior.playerPos.x = entrance.startingPos.x;
+    interior.playerPos.y = entrance.startingPos.y;
     return interior;
 }
 
@@ -44,10 +46,11 @@ entranceCoords interiorGenerator::createEntrance(BSP* bsp)
     roomBox* end = mostDistantRooms.second;
 
     entranceCoords entrance;
-    entrance.startingPosX = getRandomNumber(start->posX + 2, start->posX + start->width - 2);
-    entrance.startingPosY = getRandomNumber(start->posY  + 2, start->posY + start->height - 2);
-    entrance.endingPosX = getRandomNumber(end->posX + 2, end->posX + end->width - 2);
-    entrance.endingPosY = getRandomNumber(end->posY + 2, end->posY + end->height - 2);
+    entrance.startingPos.x = getRandomNumber(start->posX + 2, start->posX + start->width - 2);
+    entrance.startingPos.y = getRandomNumber(start->posY  + 2, start->posY + start->height - 2);
+    entrance.endingPos.x = getRandomNumber(end->posX + 2, end->posX + end->width - 2);
+    entrance.endingPos.y = getRandomNumber(end->posY + 2, end->posY + end->height - 2);
+    
     return entrance;
 
 }

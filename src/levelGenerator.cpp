@@ -9,6 +9,81 @@ levelGenerator::levelGenerator(int level)
     interior = interiorGen.createInterior(dungeonDepth, &bsp);
 }
 
+coords levelGenerator::getPlayerPos()
+{
+     return interior.playerPos;
+}
+
+//prints level centered around x and y coordinates
+void levelGenerator::print(int x, int y, int windowWidth, int windowHeight)
+{
+     int hWidth = std::ceil( (float) windowWidth / 2.0);
+     int hHeight = std::ceil( (float) windowHeight / 2.0);
+
+     int startX = x - hWidth;
+     int endX = x + hWidth;
+     int startY = y - hHeight;
+     int endY = y + hHeight;
+
+     std::vector<std::vector<level::levelTile*>> sector = getLevelSector(startX, startY, endX, endY);
+
+     for(int y = 0; y < sector.size(); y++)
+     {
+          for(int x = 0; x < sector[y].size(); x++)
+          {    
+               std::wcout << sector[y][x]->tile.value;
+          }
+          std::cout << std::endl;
+     }
+
+     std::cout << std::endl;
+     
+}
+
+std::vector<std::vector<level::levelTile*>> levelGenerator::getLevelSector(int startX, int startY, int endX, int endY)
+{
+     std::vector<std::vector<level::levelTile*>> sector;
+
+     int currentY = 0;
+
+     for(int y = startY; y < endY; y++)
+     {
+
+          if (currentY >= sector.size()) 
+          {
+               std::vector<level::levelTile*> inner = {};
+               sector.push_back(inner);
+          }
+
+          for(int x = startX; x < endX; x++)
+          {
+               bool pushed = false;
+               if (y >= 0 && y < levelTiles.size()) 
+               {
+                    if(x >= 0 && x < levelTiles[y].size())
+                    {    
+                         std::cout << x << "pushed" << y << std::endl;
+                         sector[currentY].push_back(&levelTiles[y][x]);
+                         pushed = true;
+                    }     
+               }
+               
+               if(!pushed)
+               {
+                    std::vector<level::TileBase> stack;
+                    level::floorType::type myType = level::floorType::type::EMPTY;
+                    level::floorType myItem(myType);
+                    level::levelTile* tile = new level::levelTile{0, myItem, stack};
+                    sector[currentY].push_back(tile);
+               }
+               
+          }
+          currentY++;
+     }
+
+     return sector;
+}
+
 void levelGenerator::generatePreview(std::string outputPath, int scale)
 {
     std::cout << "generating preview..." << std::endl;
@@ -73,11 +148,11 @@ void levelGenerator::generatePreview(std::string outputPath, int scale)
     }
 
     // add starting point
-    file << "<rect x=\"" << interior.entrance.startingPosX  * scale << "\" y=\"" << interior.entrance.startingPosY  * scale << "\" width=\"" << scale << "\" height=\"" << scale
+    file << "<rect x=\"" << interior.entrance.startingPos.x  * scale << "\" y=\"" << interior.entrance.startingPos.y  * scale << "\" width=\"" << scale << "\" height=\"" << scale
          << "\" fill=\"green\" stroke=\"green\" stroke-width=\""<< scale <<"\" />" << std::endl;
 
     // add ending point
-    file << "<rect x=\"" << interior.entrance.endingPosX * scale << "\" y=\"" << interior.entrance.endingPosY  * scale << "\" width=\"" << scale << "\" height=\"" << scale
+    file << "<rect x=\"" << interior.entrance.endingPos.x * scale << "\" y=\"" << interior.entrance.endingPos.y  * scale << "\" width=\"" << scale << "\" height=\"" << scale
          << "\" fill=\"red\" stroke=\"red\" stroke-width=\""<< scale <<"\" />" << std::endl;
 
 

@@ -46,69 +46,145 @@ namespace generator
         std::vector<corridorLine*> corridors;
     };
 
-    struct entranceCoords
+    struct coords
     {
-        int startingPosX;
-        int startingPosY;
-        int endingPosX;
-        int endingPosY;
+        int x;
+        int y;
     };
 
-    struct enemy
+    struct entranceCoords
     {
-        int posX;
-        int posY;
+        coords startingPos;
+        coords endingPos;
     };
+
+    
 
     struct interiorElements
     {
         entranceCoords entrance;
-        std::vector<enemy> enemys;
+        coords playerPos;
+        std::vector<coords> enemys;
+        
     };
 
 }
 
-namespace manager
+namespace level
 {
-    namespace Trap 
+    class TileBase 
     {
-        enum trapType
-        {
-            POISON,
-            FIRE,
-            CONFUSSION,
-            DARKNESS,
-            WEAKNESS
-        };
-    }
+        public:
+            wchar_t value = L'0';
 
-    namespace Floor 
-    {
-        enum floorType
-        {
-            NORMAL,
-            DOOR,
-            WATER,
-            PUDDLE,
-            TRAP,
-            BUSH,
-            TREASURE,
-            GRAVE
-        };
-    }
+            TileBase(wchar_t val)
+            {
+                value = val;
+            }
+    };
 
-    namespace Wall 
+    class itemType : public TileBase 
     {
-        enum wallType
-        {
-            NORMAL,
-            LIGHT
-        };
-    }
+        public:
+            enum class type: wchar_t
+            {
+                HERB = L'❀',
+                POTION = L'⇩', 
+                SCROLL = L'⌘',
+                ARMOR = L'♕',
+                WEAPON = L'†',
+                THROWABLE = L'➳',
+                ITEM = L'♲',
+                TREASURE = L'⟏',
+                GRAVE = L'🕈',
+                BUSH = L'𝦵',
+                ENTER = L'☰',
+                EXIT = L'⦿'
+            };
+
+            itemType(type val) : TileBase(static_cast<wchar_t>(val))
+            {
+            }
+    };
+
+    class entityType : public TileBase 
+    {
+        public:
+            enum class type: wchar_t
+            {
+                PLAYER = L'🯅',
+                ENEMY1 = L'🩑',
+                ENEMY2 = L'♝',
+                ENEMY3 = L'♚',
+                ENEMY4 = L'♟',
+                ENEMY5 = L'🨀',
+                ENEMY6 = L'🩓',
+            };
+
+            entityType(type val) : TileBase(static_cast<wchar_t>(val))
+            {
+            }
+    };
+
+    class trapType : public TileBase 
+    {
+        public:
+            enum class type: wchar_t
+            {
+                POISON = L'①',
+                THUNDER = L'②',
+                FIRE = L'③',
+                CONFUSSION = L'④',
+                DARKNESS = L'⑤',
+                WEAKNESS = L'⑥'
+            };
+
+            trapType(type val) : TileBase(static_cast<wchar_t>(val))
+            {
+            }
+    };
+
+    class floorType : public TileBase 
+    {
+        public:
+            enum class type: wchar_t
+            {
+                EMPTY = L'*',
+                NORMAL = L' ',
+                DOOR = L'▤',
+                HOLE = L'▓',
+                PUDDLE = L'░',
+            };
+
+            floorType(type val) : TileBase(static_cast<wchar_t>(val))
+            {
+            }
+    };
+
+
+    class wallType : public TileBase 
+    {
+        public:
+            enum class type: wchar_t
+            {
+                NORMAL = L'█',
+                LIGHT = L'▟'
+            };
+
+            wallType(type val) : TileBase(static_cast<wchar_t>(val))
+            {
+            }
+    };
+
+
+    
+    
 
     struct levelTile
     {
         int id;
+        TileBase tile;
+        std::vector<TileBase> stack;
     };
 
 

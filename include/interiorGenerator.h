@@ -20,7 +20,6 @@ class interiorGenerator
 {
     public:
         interiorGenerator();
-
         
         interiorElements createInterior(int dunegonDepth, generator::BSP* bsp);
 
