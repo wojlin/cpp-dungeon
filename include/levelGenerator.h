@@ -9,7 +9,7 @@
 #include <string.h>
 #include <sstream>
 #include <map>
-
+#include <ncursesw/ncurses.h>
 #include "utils.h"
 
 #include "layoutGenerator.h"

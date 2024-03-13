@@ -19,6 +19,79 @@ interiorElements interiorGenerator::createInterior(int dunegonDepth, BSP* bsp)
     return interior;
 }
 
+
+std::vector<std::vector<level::levelTile>> interiorGenerator::createLevelTiles(BSP* bsp)
+{
+
+    std::vector<std::vector<level::levelTile>> tiles;
+
+    for(int y = 0; y < bsp->root.height; y++)
+    {
+        std::vector<level::levelTile> layer;
+
+        for(int x = 0; x < bsp->root.width; x++)
+        {
+            std::vector<level::TileBase> stack;
+            level::floorType::type myType = level::floorType::type::EMPTY;
+            level::floorType myItem(myType);
+            level::levelTile tile = level::levelTile{0, myItem, stack};
+            layer.push_back(tile);
+        }
+        tiles.push_back(layer);
+    }
+
+    for(int i = 0; i < bsp->roomsAmount; i++)
+    {
+        roomBox* room = bsp->rooms[i];
+        
+        for(int y = room->posY; y < room->posY+room->height; y++)
+        {
+            for(int x = room->posX; x < room->posX+room->width; x++)
+            {   
+                std::vector<level::TileBase> stack;
+                level::floorType::type myType = level::floorType::type::NORMAL;
+                level::floorType myItem(myType);
+                tiles[y][x] = level::levelTile{0, myItem, stack};
+            }
+        }
+
+        for(int x = room->posX; x < room->posX+room->width; x++)
+        {
+            std::vector<level::TileBase> stack;
+            level::wallType::type myType = level::wallType::type::NORMAL;
+            level::wallType myItem(myType);
+            tiles[room->posY][x] = level::levelTile{0, myItem, stack};
+        }
+        
+        for(int x = room->posX; x < room->posX+room->width; x++)
+        {
+            std::vector<level::TileBase> stack;
+            level::wallType::type myType = level::wallType::type::NORMAL;
+            level::wallType myItem(myType);
+            tiles[room->posY + room->height - 1][x] = level::levelTile{0, myItem, stack};
+        }
+        
+        for(int y = room->posY; y < room->posY+room->height; y++)
+        {
+            std::vector<level::TileBase> stack;
+            level::wallType::type myType = level::wallType::type::NORMAL;
+            level::wallType myItem(myType);
+            tiles[y][room->posX] = level::levelTile{0, myItem, stack};
+        }
+        
+        for(int y = room->posY; y < room->posY+room->height; y++)
+        {
+            std::vector<level::TileBase> stack;
+            level::wallType::type myType = level::wallType::type::NORMAL;
+            level::wallType myItem(myType);
+            tiles[y][room->posX + room->width - 1] = level::levelTile{0, myItem, stack};
+        }
+        
+    }
+
+    return tiles;
+}
+
 entranceCoords interiorGenerator::createEntrance(BSP* bsp)
 {
     //step 1: find most distanced rooms

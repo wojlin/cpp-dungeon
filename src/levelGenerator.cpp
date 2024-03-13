@@ -6,6 +6,7 @@ levelGenerator::levelGenerator(int level)
     dungeonDepth = level;
 
     bsp = layoutGen.createLayout(dungeonDepth);
+    levelTiles = interiorGen.createLevelTiles(&bsp);
     interior = interiorGen.createInterior(dungeonDepth, &bsp);
 }
 
@@ -31,13 +32,19 @@ void levelGenerator::print(int x, int y, int windowWidth, int windowHeight)
      {
           for(int x = 0; x < sector[y].size(); x++)
           {    
-               std::wcout << sector[y][x]->tile.value;
+               wchar_t full_block = sector[y][x]->tile.value;
+               cchar_t cch;
+               setcchar(&cch, &full_block, A_NORMAL, 0, NULL);
+               wadd_wch(stdscr, &cch);
+               
           }
-          std::cout << std::endl;
+          printw("\n");
+          //std::cout << std::endl;
      }
-
-     std::cout << std::endl;
      
+     //std::cout << std::endl;
+     printw("\n");
+     refresh(); 
 }
 
 std::vector<std::vector<level::levelTile*>> levelGenerator::getLevelSector(int startX, int startY, int endX, int endY)
@@ -62,7 +69,6 @@ std::vector<std::vector<level::levelTile*>> levelGenerator::getLevelSector(int s
                {
                     if(x >= 0 && x < levelTiles[y].size())
                     {    
-                         std::cout << x << "pushed" << y << std::endl;
                          sector[currentY].push_back(&levelTiles[y][x]);
                          pushed = true;
                     }     

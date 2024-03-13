@@ -23,6 +23,8 @@ class interiorGenerator
         
         interiorElements createInterior(int dunegonDepth, generator::BSP* bsp);
 
+        std::vector<std::vector<level::levelTile>> createLevelTiles(generator::BSP* bsp);
+
     protected:
         entranceCoords createEntrance(generator::BSP* bsp);
 
