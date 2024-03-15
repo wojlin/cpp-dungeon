@@ -32,8 +32,8 @@ std::vector<std::vector<level::levelTile>> interiorGenerator::createLevelTiles(B
         for(int x = 0; x < bsp->root.width; x++)
         {
             std::vector<level::TileBase> stack;
-            level::floorType::type myType = level::floorType::type::EMPTY;
-            level::floorType myItem(myType);
+            level::wallType::type myType = level::wallType::type::EMPTY;
+            level::wallType myItem(myType);
             level::levelTile tile = level::levelTile{0, myItem, stack};
             layer.push_back(tile);
         }
@@ -87,6 +87,65 @@ std::vector<std::vector<level::levelTile>> interiorGenerator::createLevelTiles(B
             tiles[y][room->posX + room->width - 1] = level::levelTile{0, myItem, stack};
         }
         
+    }
+    
+    for(int i = 0; i < bsp->corridorsAmount; i++)
+    {
+        corridorLine* corridor = bsp->corridors[i];
+
+        if(corridor->startX == corridor->endX)
+        {   
+            int start = std::min(corridor->startY, corridor->endY);
+            int amount = std::abs(corridor->startY - corridor->endY);
+            for(int y = -1; y <= amount; y++)
+            {   
+                std::vector<level::TileBase> stack;
+                level::floorType::type myType = level::floorType::type::NORMAL;
+                level::floorType myItem(myType);
+                tiles[start + y][corridor->startX] = level::levelTile{0, myItem, stack};
+
+                std::vector<level::TileBase> wallStack;
+                level::wallType::type wall = level::wallType::type::NORMAL;
+                level::wallType wallItem(wall);
+                
+                if(!tiles[start + y][corridor->startX - 1].tile.isOfType(level::TileBase::Type::Floor))
+                {
+                    tiles[start + y][corridor->startX - 1] = level::levelTile{0, wallItem, wallStack};
+                }
+                if(!tiles[start + y][corridor->startX + 1].tile.isOfType(level::TileBase::Type::Floor))
+                {
+                    tiles[start + y][corridor->startX + 1] = level::levelTile{0, wallItem, wallStack};
+                }                    
+            }
+        }
+
+
+        if(corridor->startY == corridor->endY)
+        {   
+            int start = std::min(corridor->startX, corridor->endX);
+            int amount = std::abs(corridor->startX - corridor->endX);
+            for(int x = -1; x <= amount; x++)
+            {   
+                std::vector<level::TileBase> stack;
+                level::floorType::type myType = level::floorType::type::NORMAL;
+                level::floorType myItem(myType);
+                tiles[corridor->startY][start + x] = level::levelTile{0, myItem, stack};
+
+                std::vector<level::TileBase> wallStack;
+                level::wallType::type wall = level::wallType::type::NORMAL;
+                level::wallType wallItem(wall);
+                
+                if(!tiles[corridor->startY + 1][start + x].tile.isOfType(level::TileBase::Type::Floor))
+                {
+                    tiles[corridor->startY + 1][start + x] = level::levelTile{0, wallItem, wallStack};
+                }
+                if(!tiles[corridor->startY - 1][start + x].tile.isOfType(level::TileBase::Type::Floor))
+                {
+                    tiles[corridor->startY - 1][start + x] = level::levelTile{0, wallItem, wallStack};
+                }                    
+            }
+        }
+  
     }
 
     return tiles;

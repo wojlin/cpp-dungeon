@@ -31,8 +31,8 @@ int launchGame(int argc, char* argv[])
     }
 
     levelGenerator level(1);
-    level.generatePreview("preview.png", 10);
-    level.print(level.getPlayerPos().x, level.getPlayerPos().y, 20, 20);
+    level.generatePreview("preview.png", 1);
+    level.print(level.getPlayerPos().x, level.getPlayerPos().y, 80, 40);
 
     getch();    // Wait for a key press
     endwin();   // End ncurses

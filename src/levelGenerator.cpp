@@ -77,8 +77,8 @@ std::vector<std::vector<level::levelTile*>> levelGenerator::getLevelSector(int s
                if(!pushed)
                {
                     std::vector<level::TileBase> stack;
-                    level::floorType::type myType = level::floorType::type::EMPTY;
-                    level::floorType myItem(myType);
+                    level::wallType::type myType = level::wallType::type::EMPTY;
+                    level::wallType myItem(myType);
                     level::levelTile* tile = new level::levelTile{0, myItem, stack};
                     sector[currentY].push_back(tile);
                }

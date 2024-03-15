@@ -131,7 +131,7 @@ BSP layoutGenerator::createBSP(int dungeonDepth)
     bsp.roomsAmount = 0;
     bsp.root = root;
     bsp.recursionAmount = recursionsAmount;
-    
+    bsp.corridorsAmount  = 0;
     return bsp;
 }
 
@@ -331,7 +331,6 @@ roomBox layoutGenerator::createRoom(nodeBSP* node)
 
 void layoutGenerator::createCorridor(BSP* bsp, nodeBSP* node)
 {
-
     corridorLine line;
 
     if(node->depth == 1)

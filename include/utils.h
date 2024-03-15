@@ -75,12 +75,17 @@ namespace level
     class TileBase 
     {
         public:
+            enum class Type { Item, Entity, Trap, Floor, Wall };
+            Type tileType;
+
             wchar_t value = L'0';
 
-            TileBase(wchar_t val)
-            {
-                value = val;
+            TileBase(Type type, wchar_t val) : tileType(type), value(val) {
             }
+
+            bool isOfType(Type type) const {
+            return type == tileType;
+        }
     };
 
     class itemType : public TileBase 
@@ -102,7 +107,7 @@ namespace level
                 EXIT = L'⦿'
             };
 
-            itemType(type val) : TileBase(static_cast<wchar_t>(val))
+            itemType(type val) : TileBase(Type::Item, static_cast<wchar_t>(val))
             {
             }
     };
@@ -121,7 +126,7 @@ namespace level
                 ENEMY6 = L'🩓',
             };
 
-            entityType(type val) : TileBase(static_cast<wchar_t>(val))
+            entityType(type val) : TileBase(Type::Entity, static_cast<wchar_t>(val))
             {
             }
     };
@@ -139,7 +144,7 @@ namespace level
                 WEAKNESS = L'⑥'
             };
 
-            trapType(type val) : TileBase(static_cast<wchar_t>(val))
+            trapType(type val) : TileBase(Type::Trap, static_cast<wchar_t>(val))
             {
             }
     };
@@ -149,14 +154,13 @@ namespace level
         public:
             enum class type: wchar_t
             {
-                EMPTY = L'*',
                 NORMAL = L' ',
                 DOOR = L'▤',
                 HOLE = L'▓',
                 PUDDLE = L'░',
             };
 
-            floorType(type val) : TileBase(static_cast<wchar_t>(val))
+            floorType(type val) : TileBase(Type::Floor, static_cast<wchar_t>(val))
             {
             }
     };
@@ -167,11 +171,12 @@ namespace level
         public:
             enum class type: wchar_t
             {
+                EMPTY = L'*',
                 NORMAL = L'█',
                 LIGHT = L'▟'
             };
 
-            wallType(type val) : TileBase(static_cast<wchar_t>(val))
+            wallType(type val) : TileBase(Type::Wall, static_cast<wchar_t>(val))
             {
             }
     };
