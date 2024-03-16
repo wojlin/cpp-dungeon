@@ -32,9 +32,44 @@ int launchGame(int argc, char* argv[])
 
     levelGenerator level(1);
     level.generatePreview("preview.png", 1);
-    level.print(level.getPlayerPos().x, level.getPlayerPos().y, 80, 40);
 
-    getch();    // Wait for a key press
+    bool end = false;
+    while(!end)
+    {
+        level.print(level.getPlayerPos().x, level.getPlayerPos().y, 80, 40);
+        int input = getch();
+        clear();
+        if(input == 68 || input == 97) 
+        { 
+            coords pos = level.getPlayerPos();
+            level.setPlayerPos(pos.x - 1, pos.y);
+        }
+        else if(input == 67 || input == 100) 
+        { 
+            coords pos = level.getPlayerPos();
+            level.setPlayerPos(pos.x + 1, pos.y);
+        }
+        else if(input == 65 || input == 119) 
+        { 
+            coords pos = level.getPlayerPos();
+            level.setPlayerPos(pos.x, pos.y - 1);
+        }
+        else if (input == 66 || input == 115) 
+        { 
+            coords pos = level.getPlayerPos();
+            level.setPlayerPos(pos.x, pos.y + 1);
+        }
+        else if(input == 'q')
+        {
+            end=true;
+        }
+        else 
+        { 
+            mvprintw(0, 0, "%d", input);
+        }
+
+    }
+    
     endwin();   // End ncurses
     return 0;
 }

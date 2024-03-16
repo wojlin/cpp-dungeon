@@ -15,6 +15,12 @@ coords levelGenerator::getPlayerPos()
      return interior.playerPos;
 }
 
+void levelGenerator::setPlayerPos(int x, int y)
+{
+     interior.playerPos.x = x;
+     interior.playerPos.y = y;
+}
+
 //prints level centered around x and y coordinates
 void levelGenerator::print(int x, int y, int windowWidth, int windowHeight)
 {

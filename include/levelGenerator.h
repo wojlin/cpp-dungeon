@@ -21,6 +21,8 @@ class levelGenerator
         levelGenerator(int level);
 
         coords getPlayerPos();
+
+        void setPlayerPos(int x, int y);
         
         void generatePreview(std::string outputPath, int scale = 10);
 
