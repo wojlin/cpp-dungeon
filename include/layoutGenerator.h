@@ -9,6 +9,7 @@
 #include <string.h>
 #include <sstream>
 #include <map>
+#include <fstream>
 
 #include "utils.h"
 using namespace generator;

@@ -598,10 +598,13 @@ void layoutGenerator::createCorridor(BSP* bsp, nodeBSP* node)
 
 BSP layoutGenerator::createLayout(int dungeonDepth)
 {
+
     std::cout << "generating layout..." << std::endl;
+
     BSP bsp = createBSP(dungeonDepth);
     traverseBSP(&bsp, &bsp.root);
-    std::cout << "layout generated!" << std::endl;
+
+    std::cout << "layout generated!"<< std::endl;
     /*
     std::cout << "recursion amount: " << bsp.recursionAmount << std::endl;
     std::cout << "nodes amount: " << bsp.nodesAmount << std::endl;

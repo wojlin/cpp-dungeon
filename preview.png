@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="87" height="87" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <rect width="87" height="87" fill="white" />
+  <rect  x="5" y="1" width="26" height="19" fill="gray" />
+<rect x="5" y="1" width="26" height="19" fill="none" stroke="black" stroke-width="1" />
+  <rect  x="18" y="22" width="17" height="9" fill="gray" />
+<rect x="18" y="22" width="17" height="9" fill="none" stroke="black" stroke-width="1" />
+  <rect  x="5" y="36" width="15" height="16" fill="gray" />
+<rect x="5" y="36" width="15" height="16" fill="none" stroke="black" stroke-width="1" />
+  <rect  x="3" y="59" width="42" height="26" fill="gray" />
+<rect x="3" y="59" width="42" height="26" fill="none" stroke="black" stroke-width="1" />
+  <rect  x="48" y="17" width="22" height="36" fill="gray" />
+<rect x="48" y="17" width="22" height="36" fill="none" stroke="black" stroke-width="1" />
+  <rect  x="74" y="3" width="12" height="39" fill="gray" />
+<rect x="74" y="3" width="12" height="39" fill="none" stroke="black" stroke-width="1" />
+  <rect  x="48" y="60" width="19" height="25" fill="gray" />
+<rect x="48" y="60" width="19" height="25" fill="none" stroke="black" stroke-width="1" />
+  <rect  x="73" y="77" width="11" height="7" fill="gray" />
+<rect x="73" y="77" width="11" height="7" fill="none" stroke="black" stroke-width="1" />
+<rect x="5" y="1" width="26" height="19" fill="none" stroke="black" stroke-width="1" />
+<rect x="18" y="22" width="17" height="9" fill="none" stroke="black" stroke-width="1" />
+<rect x="5" y="36" width="15" height="16" fill="none" stroke="black" stroke-width="1" />
+<rect x="3" y="59" width="42" height="26" fill="none" stroke="black" stroke-width="1" />
+<rect x="48" y="17" width="22" height="36" fill="none" stroke="black" stroke-width="1" />
+<rect x="74" y="3" width="12" height="39" fill="none" stroke="black" stroke-width="1" />
+<rect x="48" y="60" width="19" height="25" fill="none" stroke="black" stroke-width="1" />
+<rect x="73" y="77" width="11" height="7" fill="none" stroke="black" stroke-width="1" />
+  <line x1="20" y1="22" x2="20" y2="20" style="stroke:rgb(0,0,0);stroke-width:1" />
+  <line x1="13" y1="59" x2="13" y2="52" style="stroke:rgb(0,0,0);stroke-width:1" />
+  <line x1="12" y1="20" x2="12" y2="36" style="stroke:rgb(0,0,0);stroke-width:1" />
+  <line x1="70" y1="33" x2="74" y2="33" style="stroke:rgb(0,0,0);stroke-width:1" />
+  <line x1="67" y1="81" x2="73" y2="81" style="stroke:rgb(0,0,0);stroke-width:1" />
+  <line x1="57" y1="53" x2="57" y2="60" style="stroke:rgb(0,0,0);stroke-width:1" />
+  <line x1="31" y1="17" x2="48" y2="17" style="stroke:rgb(0,0,0);stroke-width:1" />
+<rect x="10" y="8" width="1" height="1" fill="green" stroke="green" stroke-width="1" />
+<rect x="77" y="79" width="1" height="1" fill="red" stroke="red" stroke-width="1" />
+</svg>
