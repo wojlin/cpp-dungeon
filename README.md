@@ -7,7 +7,7 @@ Pixel Dungeon, a C++ roguelike, combines challenging gameplay with minimalist AS
 ```bash
 git clone https://github.com/wojlin/cpp-dungeon.git
 cd cpp-dungeon
-git submodule add https://github.com/google/googletest.git external/googletest
+git submodule add -f https://github.com/google/googletest.git external/googletest
 
 pip install 'jinja2<3.1' gcovr # only needed to gen code coveragge report. you can skip this step
 pip install gcovr

@@ -2,6 +2,44 @@
 #define UTILS_H
 
 
+#include <iostream>
+#include <exception>
+
+
+class NetworkError : public std::exception {
+public:
+    NetworkError(const char* message) : m_message(message) 
+    {
+
+    }
+    
+    virtual const char* what() const noexcept override 
+    {
+        return m_message.c_str();
+    }
+
+private:
+    std::string m_message;
+};
+
+class GUIError : public std::exception {
+public:
+    GUIError(const char* message) : m_message(message) 
+    {
+        
+    }
+    
+    virtual const char* what() const noexcept override 
+    {
+        return m_message.c_str();
+    }
+
+private:
+    std::string m_message;
+};
+
+
+
 namespace generator
 {
     struct roomBox

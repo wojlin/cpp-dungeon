@@ -19,7 +19,7 @@ interiorElements interiorGenerator::createInterior(int dunegonDepth, BSP* bsp)
     interior.entrance = entrance;
     interior.playerPos.x = entrance.startingPos.x;
     interior.playerPos.y = entrance.startingPos.y;
-
+    
 
 
     std::cout << "interior generated..." << std::endl;

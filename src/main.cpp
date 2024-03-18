@@ -2,5 +2,6 @@
 
 int main(int argc, char* argv[])
 {
-    return launchGame(argc, argv);
+    core app = core();
+    return app.launch(argc, argv);
 }

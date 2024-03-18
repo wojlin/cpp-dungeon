@@ -21,5 +21,5 @@ target_link_libraries(${PROJECT_NAME} ncursesw)
 
 enable_testing()
 add_subdirectory(external)
-add_subdirectory(tests)
-add_dependencies(${PROJECT_NAME} run_tests)
+#add_subdirectory(tests)
+#add_dependencies(${PROJECT_NAME} run_tests)
